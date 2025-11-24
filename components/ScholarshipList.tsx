@@ -53,9 +53,9 @@ const DUMMY_SCHOLARSHIPS = [
 
 export default function ScholarshipList() {
     return (
-        <section className="w-full max-w-7xl mx-auto px-6 py-12">
+        <section className="w-full max-w-[1200px] mx-auto px-6 py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">장학금</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
                 {DUMMY_SCHOLARSHIPS.map((scholarship) => (
                     <ScholarshipCard
                         key={scholarship.id}

@@ -16,37 +16,40 @@ export default function ScholarshipCard({
     amount,
 }: ScholarshipCardProps) {
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col justify-between h-full relative overflow-hidden group">
-            {/* Heart Icon (Placeholder) */}
-            <button className="absolute top-6 right-6 text-gray-300 hover:text-red-500 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-            </button>
-
-            <div className="space-y-4">
-                <span className="inline-block bg-[#FF6B6B] text-white text-xs font-bold px-3 py-1 rounded-full">
+        <div className="w-full max-w-[550px] min-h-[250px] bg-white rounded-[20px] p-7 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative cursor-pointer group flex flex-col justify-between">
+            {/* Top Section */}
+            <div className="flex justify-between items-start mb-4">
+                <span className="inline-flex items-center justify-center bg-[#FF6B6B] text-white text-lg font-bold px-4 py-1.5 rounded-xl">
                     {dDay}
                 </span>
+                <button className="text-[#FF6B6B] hover:opacity-80 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                    </svg>
+                </button>
+            </div>
 
-                <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-gray-900 line-clamp-2 group-hover:text-[var(--primary)] transition-colors">
-                        {title}
-                    </h3>
-                    <p className="text-sm text-gray-500">{location}</p>
-                </div>
+            {/* Content Container */}
+            <div className="space-y-2 mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 line-clamp-2">
+                    {title}
+                </h3>
+                <p className="text-gray-500 font-medium">{location}</p>
+            </div>
 
-                <div className="flex flex-wrap gap-2">
+            {/* Bottom Section */}
+            <div className="flex justify-between items-end flex-wrap gap-4">
+                {/* Tags */}
+                <div className="flex gap-2 flex-wrap">
                     {tags.map((tag, index) => (
-                        <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                        <span key={index} className="bg-gray-50 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
                             {tag}
                         </span>
                     ))}
                 </div>
-            </div>
 
-            <div className="mt-6 pt-4 border-t border-gray-50 flex justify-end items-center">
-                <span className="text-xl font-bold text-gray-900">{amount}</span>
+                {/* Amount */}
+                <span className="text-2xl font-bold text-gray-900 whitespace-nowrap">{amount}</span>
             </div>
         </div>
     );

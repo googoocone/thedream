@@ -1,26 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import Navigation from "./Navigation";
 
-export default function Header() {
+export default async function Header() {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
     return (
-        <header className="w-full h-[80px] flex justify-between items-center px-6 max-w-7xl mx-auto">
-            <Link href="/" className="flex items-center">
-                <Image
-                    src="/logo.png"
-                    alt="The Dream Logo"
-                    width={36}
-                    height={37}
-                    className="object-contain"
-                />
-            </Link>
-            <div className="flex gap-3">
-                <button className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2">
-                    로그인
-                </button>
-                <button className="text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 px-4 py-2 rounded-md transition-opacity">
-                    회원가입
-                </button>
-            </div>
+        <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
+            <Navigation user={user} />
         </header>
     );
 }

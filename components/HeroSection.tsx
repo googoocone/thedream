@@ -34,10 +34,6 @@ export default function HeroSection() {
     const text3 = "AI가 당신에게 맞는 장학금을 추천합니다.";
 
     useEffect(() => {
-        let timeout1: NodeJS.Timeout;
-        let timeout2: NodeJS.Timeout;
-        let timeout3: NodeJS.Timeout;
-
         const typeText = (text: string, setter: (s: string) => void, delay: number) => {
             let i = 0;
             return setTimeout(() => {
@@ -49,9 +45,9 @@ export default function HeroSection() {
             }, delay);
         };
 
-        timeout1 = typeText(text1, setTypedText1, 0);
-        timeout2 = typeText(text2, setTypedText2, 1500); // Start after text1 roughly finishes
-        timeout3 = typeText(text3, setTypedText3, 3000); // Start after text2 roughly finishes
+        const timeout1 = typeText(text1, setTypedText1, 0);
+        const timeout2 = typeText(text2, setTypedText2, 1500);
+        const timeout3 = typeText(text3, setTypedText3, 3000);
 
         return () => {
             clearTimeout(timeout1);
@@ -117,15 +113,15 @@ export default function HeroSection() {
             </div>
 
             {/* Right Section: Abstract Shapes */}
-            <div className="w-full md:w-1/2 relative h-[400px] md:h-[500px] flex items-center justify-center">
+            <div className="hidden sm:block w-full md:w-1/2 relative h-[400px] md:h-[500px] flex items-center justify-center">
                 {/* Yellow Circle */}
                 <div className="absolute top-0 right-10 w-64 h-64 bg-[#FCD34D] rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
                 {/* Orange Circle */}
                 <div className="absolute bottom-0 right-20 w-64 h-64 bg-[#F87B4A] rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
                 {/* White Cards (Abstract) */}
-                <div className="absolute top-20 right-40 w-48 h-16 bg-white rounded-lg shadow-xl transform -rotate-6 animate-float"></div>
-                <div className="absolute top-40 right-10 w-48 h-16 bg-white rounded-lg shadow-xl transform rotate-3 animate-float animation-delay-1000"></div>
-                <div className="absolute bottom-20 right-32 w-48 h-16 bg-white rounded-lg shadow-xl transform -rotate-3 animate-float animation-delay-2000"></div>
+                <div className="absolute top-20 right-40 w-[250px] h-[75px] bg-white rounded-lg shadow-xl transform -rotate-6 animate-float text-sm p-2 flex items-center text-left">000님이 받을 수 있는 장학금 신청기간이 열렸어요!</div>
+                <div className="absolute top-40 right-10 w-[250px] h-[75px] bg-white rounded-lg shadow-xl transform rotate-3 animate-float text-sm animation-delay-1000 p-2 flex items-center text-left">정보를 자세하게 적을수록 받을 수 있는 장학금의 갯수가 많아져요!</div>
+                <div className="absolute bottom-20 right-32 w-[250px] h-[75px] bg-white rounded-lg shadow-xl transform -rotate-3 animate-float text-sm animation-delay-2000 p-2 flex items-center text-left">AI가 받을 수 있는 장학금을 놓치지 않고 찾아드려요</div>
             </div>
         </section>
     );
