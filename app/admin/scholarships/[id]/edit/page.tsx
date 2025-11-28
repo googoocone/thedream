@@ -161,7 +161,16 @@ export default function EditScholarshipPage() {
     )
 }
 
-function Field({ label, value, onChange, type = 'text', fullWidth = false, multiline = false }: any) {
+interface FieldProps {
+    label: string;
+    value: any;
+    onChange: (value: any) => void;
+    type?: string;
+    fullWidth?: boolean;
+    multiline?: boolean;
+}
+
+function Field({ label, value, onChange, type = 'text', fullWidth = false, multiline = false }: FieldProps) {
     return (
         <div className={fullWidth ? 'col-span-2' : ''}>
             <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>

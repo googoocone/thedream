@@ -117,14 +117,11 @@ export default function ScholarshipList() {
     }, [handleObserver]);
 
     // Reset visible count on search
-    useEffect(() => {
-        setVisibleCount(ITEMS_PER_LOAD);
-    }, [searchTerm]);
-
     const displayedScholarships = scholarships.slice(0, visibleCount);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value)
+        setVisibleCount(ITEMS_PER_LOAD)
     }
 
     return (

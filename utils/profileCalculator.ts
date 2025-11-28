@@ -1,4 +1,18 @@
-export function calculateCompletion(user: any): number {
+interface UserProfile {
+    nickname?: string;
+    birth_date?: string;
+    gender?: string;
+    phone_number?: string;
+    school_name?: string;
+    major?: string;
+    current_grade?: number;
+    enrollment_status?: string;
+    income_bracket?: number;
+    family_size?: number;
+    [key: string]: unknown; // Allow other properties
+}
+
+export function calculateCompletion(user: UserProfile | null): number {
     if (!user) return 0;
 
     const fields = [

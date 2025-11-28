@@ -10,7 +10,14 @@ interface AddressSearchProps {
 export default function AddressSearch({ onComplete }: AddressSearchProps) {
     const [isOpen, setIsOpen] = useState(false)
 
-    const handleComplete = (data: any) => {
+    interface DaumPostcodeData {
+        address: string;
+        addressType: string;
+        bname: string;
+        buildingName: string;
+    }
+
+    const handleComplete = (data: DaumPostcodeData) => {
         let fullAddress = data.address
         let extraAddress = ''
 

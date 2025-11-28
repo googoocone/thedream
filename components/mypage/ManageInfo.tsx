@@ -18,7 +18,15 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
         return 'incomplete_red';
     };
 
-    const sections = [
+    interface Section {
+        title: string;
+        icon: string;
+        status: string;
+        items?: { label: string; value: any }[];
+        description?: string;
+    }
+
+    const sections: Section[] = [
         {
             title: "기본 정보",
             icon: "📝",
