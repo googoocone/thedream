@@ -1,55 +1,62 @@
 import Link from 'next/link';
 
-export default function ManageInfo() {
+interface ManageInfoProps {
+    userData?: any;
+}
+
+export default function ManageInfo({ userData }: ManageInfoProps) {
+    // Helper to check if a value exists
+    const has = (value: any) => value !== null && value !== undefined && value !== '';
+
+    // Determine status for each section
+    const getStatus = (fields: string[]) => {
+        const allFilled = fields.every(field => has(userData?.[field]));
+        const someFilled = fields.some(field => has(userData?.[field]));
+
+        if (allFilled) return 'completed';
+        if (someFilled) return 'incomplete_yellow';
+        return 'incomplete_red';
+    };
+
     const sections = [
         {
             title: "기본 정보",
             icon: "📝",
-            status: "completed",
+            status: getStatus(['nickname', 'birth_date', 'gender', 'phone_number']),
             items: [
-                { label: "이름", value: "홍길동" },
-                { label: "생년월일", value: "2003.05.15" },
-                { label: "성별", value: "남성" },
-                { label: "연락처", value: "010-1234-5678" },
+                { label: "이름", value: userData?.nickname || "미입력" },
+                { label: "생년월일", value: userData?.birth_date || "미입력" },
+                { label: "성별", value: userData?.gender === 'male' ? '남성' : (userData?.gender === 'female' ? '여성' : "미입력") },
+                { label: "연락처", value: userData?.phone_number || "미입력" },
             ]
         },
         {
             title: "교육 수준",
             icon: "🎓",
-            status: "completed",
+            status: getStatus(['school_name', 'major', 'current_grade']),
             items: [
-                { label: "학교", value: "한국대학교" },
-                { label: "학과", value: "컴퓨터공학과" },
-                { label: "학년", value: "3학년 1학기" },
-                { label: "학점", value: "3.8 / 4.5" },
+                { label: "학교", value: userData?.school_name || "미입력" },
+                { label: "학과", value: userData?.major || "미입력" },
+                { label: "학년", value: userData?.current_grade ? `${userData.current_grade}학년` : "미입력" },
+                { label: "학점", value: userData?.gpa ? `${userData.gpa} / 4.5` : "미입력" },
             ]
         },
         {
             title: "재정/가계",
             icon: "💰",
-            status: "incomplete_yellow", // 미완성 (노란색)
+            status: getStatus(['income_bracket', 'family_size']),
             items: [
-                { label: "소득분위", value: "미입력" },
-                { label: "가구원수", value: "미입력" },
+                { label: "소득분위", value: userData?.income_bracket ? `${userData.income_bracket}분위` : "미입력" },
+                { label: "가구원수", value: userData?.family_size ? `${userData.family_size}인` : "미입력" },
             ]
         },
         {
-            title: "활동/성향/관심",
-            icon: "⭐",
-            status: "incomplete_red", // 미입력 (빨간색)
-            description: "수상경력, 봉사활동, 자격증 등을 입력하면 더 많은 장학금 추천을 받을 수 있어요!"
-        },
-        {
-            title: "병역",
-            icon: "🎖️",
-            status: "incomplete_red",
-            description: "병역 관련 장학금 추천을 위해 입력해주세요."
-        },
-        {
-            title: "국제/체류",
-            icon: "🌏",
-            status: "incomplete_red",
-            description: "재외국민, 외국인 전형 장학금을 찾고 계신가요?"
+            title: "기타",
+            icon: "🎸",
+            status: userData?.additional_info ? 'completed' : 'incomplete_yellow',
+            items: [
+                { label: "특이사항", value: userData?.additional_info || "없음" }
+            ]
         }
     ];
 
@@ -88,8 +95,8 @@ export default function ManageInfo() {
 
                     <div className="flex justify-start">
                         <Link href={`/profile/edit?step=${index + 1}`} className={`px-4 py-2 rounded-full text-sm font-bold transition-colors inline-block ${section.status === 'completed'
-                                ? 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-                                : 'bg-[#FF9F43] text-white hover:opacity-90'
+                            ? 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                            : 'bg-[#FF9F43] text-white hover:opacity-90'
                             }`}>
                             {section.status === 'completed' ? '수정하기' : '입력하기'}
                         </Link>

@@ -18,20 +18,19 @@ export default function StepFinancial({ data, onChange }: { data: any, onChange:
                     <p className="text-xs text-gray-400">국가장학금 신청 시 소득분위 정보</p>
                 </div>
 
-                {/* Family Size (Not in DB yet, but good for UI demo) */}
+                {/* Family Size */}
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-900">가구원 수 <span className="text-gray-400 font-normal">(선택)</span></label>
-                    <select
-                        value={data.family_size || ''}
-                        onChange={(e) => onChange('family_size', parseInt(e.target.value))}
-                        className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all bg-white"
-                    >
-                        <option value="">선택해주세요</option>
-                        <option value="1">1인 가구</option>
-                        <option value="2">2인 가구</option>
-                        <option value="3">3인 가구</option>
-                        <option value="4">4인 이상</option>
-                    </select>
+                    <label className="text-sm font-bold text-gray-900">가구원 수 <span className="text-red-500">*</span></label>
+                    <div className="relative">
+                        <input
+                            type="number"
+                            value={data.family_size || ''}
+                            onChange={(e) => onChange('family_size', parseInt(e.target.value))}
+                            placeholder="4"
+                            className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">명</span>
+                    </div>
                 </div>
             </div>
 

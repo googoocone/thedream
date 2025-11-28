@@ -29,7 +29,7 @@ export default async function MyPage() {
             <div className="max-w-7xl mx-auto px-6 space-y-8">
                 <ProfileHeader user={combinedUser} />
                 {/* <DashboardStats /> */}
-                <MyPageTabs />
+                <MyPageTabs userData={combinedUser} />
             </div>
         </main>
     );

@@ -1,4 +1,7 @@
-export default function StepEducation({ data, onChange }: { data: any, onChange: (field: string, value: any) => void }) {
+import SchoolSearch from '@/components/ui/SchoolSearch'
+import MajorSearch from '@/components/ui/MajorSearch'
+
+export default function StepUniversity({ data, onChange }: { data: any, onChange: (field: string, value: any) => void }) {
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -21,23 +24,32 @@ export default function StepEducation({ data, onChange }: { data: any, onChange:
                 {/* School Name */}
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-900">소속 학교 <span className="text-red-500">*</span></label>
-                    <input
-                        type="text"
-                        value={data.school_name || ''}
-                        onChange={(e) => onChange('school_name', e.target.value)}
-                        placeholder="한국대학교"
-                        className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all"
+                    <SchoolSearch
+                        value={data.school_name}
+                        onChange={(value: string) => onChange('school_name', value)}
                     />
                 </div>
 
                 {/* Major */}
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-900">학과/전공 <span className="text-red-500">*</span></label>
+                    <MajorSearch
+                        value={data.major}
+                        onChange={(value: string, large?: string, middle?: string) => {
+                            onChange('major', value)
+                            if (large !== undefined) onChange('major_large_category', large)
+                            if (middle !== undefined) onChange('major_middle_category', middle)
+                        }}
+                    />
+                </div>
+                {/* Sub Major */}
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-900">부전공/복수전공 <span className="text-gray-400 font-normal">(선택)</span></label>
                     <input
                         type="text"
-                        value={data.major || ''}
-                        onChange={(e) => onChange('major', e.target.value)}
-                        placeholder="컴퓨터공학과"
+                        value={data.sub_major || ''}
+                        onChange={(e) => onChange('sub_major', e.target.value)}
+                        placeholder="입력해주세요"
                         className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all"
                     />
                 </div>
@@ -65,12 +77,24 @@ export default function StepEducation({ data, onChange }: { data: any, onChange:
                         <option value="4-2">4학년 2학기</option>
                     </select>
                 </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* GPA */}
+                {/* School Type */}
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-900">학점 (GPA) <span className="text-gray-400 font-normal">(선택)</span></label>
+                    <label className="text-sm font-bold text-gray-900">학교 구분 <span className="text-red-500">*</span></label>
+                    <select
+                        value={data.school_type || ''}
+                        onChange={(e) => onChange('school_type', e.target.value)}
+                        className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all bg-white"
+                    >
+                        <option value="">선택해주세요</option>
+                        <option value="university">4년제 대학교</option>
+                        <option value="college">2/3년제 전문대학</option>
+                        <option value="grad_school">대학원</option>
+                    </select>
+                </div>
+
+                {/* University GPA */}
+                <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-900">대학 학점 (GPA 4.5 만점 기준) <span className="text-gray-400 font-normal">(선택)</span></label>
                     <input
                         type="number"
                         step="0.01"
@@ -79,20 +103,18 @@ export default function StepEducation({ data, onChange }: { data: any, onChange:
                         placeholder="3.8"
                         className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all"
                     />
-                    <p className="text-xs text-gray-400">4.5 만점 기준</p>
                 </div>
 
-                {/* GPA Scale (Just for UI, we save standardized) */}
+                {/* Graduation Year */}
                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-900">학점 만점 <span className="text-gray-400 font-normal">(선택)</span></label>
-                    <select
-                        className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all bg-white"
-                    >
-                        <option value="4.5">4.5</option>
-                        <option value="4.3">4.3</option>
-                        <option value="4.0">4.0</option>
-                        <option value="100">100</option>
-                    </select>
+                    <label className="text-sm font-bold text-gray-900">졸업(예정)년도 <span className="text-gray-400 font-normal">(선택)</span></label>
+                    <input
+                        type="number"
+                        value={data.graduation_year || ''}
+                        onChange={(e) => onChange('graduation_year', parseInt(e.target.value))}
+                        placeholder="2026"
+                        className="w-full h-[52px] px-4 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all"
+                    />
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@ export default function BenefitBanner({ step }: { step: number }) {
         {
             title: "이 정보를 입력하면...",
             benefits: [
-                { icon: "🎁", title: "+8개", desc: "기본 장학금 매칭" },
+                { icon: "🎁", title: "+38개", desc: "기본 장학금 매칭" },
                 { icon: "⏱️", title: "약 2분", desc: "소요 시간" },
             ]
         },
@@ -22,13 +22,20 @@ export default function BenefitBanner({ step }: { step: number }) {
                 { icon: "🎓", title: "등록금 전액", desc: "지원 가능" },
                 { icon: "⏱️", title: "약 3분", desc: "소요 시간" },
             ]
+        }, {
+            title: "이 정보를 입력하면...",
+            benefits: [
+                { icon: "💰", title: "+20개", desc: "소득기반 장학금" },
+                { icon: "🎓", title: "등록금 전액", desc: "지원 가능" },
+                { icon: "⏱️", title: "약 3분", desc: "소요 시간" },
+            ]
         }
     ];
 
     const currentContent = content[step - 1] || content[0];
 
     return (
-        <div className="bg-gradient-to-r from-[#6C5CE7] to-[#8E78FF] rounded-2xl p-8 text-white mb-8 shadow-lg">
+        <div className="bg-gradient-to-r from-[#6C5CE7] to-[#8E78FF] rounded-2xl p-6 text-white mb-8 shadow-lg">
             <div className="flex items-center gap-2 mb-6">
                 <span className="text-xl">🎁</span>
                 <h2 className="text-lg font-bold">{currentContent.title}</h2>
