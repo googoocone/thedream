@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import ScholarshipCard from '@/components/ScholarshipCard'
 import Link from 'next/link'
@@ -33,10 +33,10 @@ export default function ScholarshipList() {
     const [scholarships, setScholarships] = useState<Scholarship[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
-    const [page, setPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
-    const ITEMS_PER_PAGE = 6
+    const [visibleCount, setVisibleCount] = useState(8)
+    const ITEMS_PER_LOAD = 8
     const supabase = createClient()
+    const observerTarget = useRef(null)
 
     useEffect(() => {
         const fetchAndSortScholarships = async () => {
@@ -76,7 +76,6 @@ export default function ScholarshipList() {
                 });
 
                 setScholarships(sorted);
-                setTotalPages(Math.ceil(sorted.length / ITEMS_PER_PAGE));
             } else if (error) {
                 console.error("Error fetching scholarships:", error);
             }
@@ -91,15 +90,41 @@ export default function ScholarshipList() {
         return () => clearTimeout(timer)
     }, [supabase, searchTerm])
 
-    // 4. Client-side Pagination
-    const paginatedScholarships = scholarships.slice(
-        (page - 1) * ITEMS_PER_PAGE,
-        page * ITEMS_PER_PAGE
-    );
+    // Infinite Scroll Observer
+    const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+        const [target] = entries;
+        if (target.isIntersecting && !loading) {
+            setVisibleCount(prev => prev + ITEMS_PER_LOAD)
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(handleObserver, {
+            root: null,
+            rootMargin: "20px",
+            threshold: 1.0
+        });
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) {
+                observer.unobserve(observerTarget.current);
+            }
+        }
+    }, [handleObserver]);
+
+    // Reset visible count on search
+    useEffect(() => {
+        setVisibleCount(ITEMS_PER_LOAD);
+    }, [searchTerm]);
+
+    const displayedScholarships = scholarships.slice(0, visibleCount);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value)
-        setPage(1) // Reset to first page on search
     }
 
     return (
@@ -120,7 +145,7 @@ export default function ScholarshipList() {
                 </div>
             </div>
 
-            {loading ? (
+            {loading && scholarships.length === 0 ? (
                 <div className="text-center py-20 text-gray-500">로딩 중...</div>
             ) : scholarships.length === 0 ? (
                 <div className="text-center py-20">
@@ -130,7 +155,7 @@ export default function ScholarshipList() {
             ) : (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        {paginatedScholarships.map((scholarship) => (
+                        {displayedScholarships.map((scholarship) => (
                             <Link key={scholarship.id} href={`/scholarships/${scholarship.id}`}>
                                 <ScholarshipCard
                                     dDay={calculateDDay(scholarship.application_end)}
@@ -143,26 +168,12 @@ export default function ScholarshipList() {
                         ))}
                     </div>
 
-                    {/* Pagination */}
-                    <div className="flex justify-center gap-2">
-                        <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            className="px-4 py-2 rounded-lg border border-gray-200 disabled:opacity-50 hover:bg-gray-50"
-                        >
-                            이전
-                        </button>
-                        <span className="px-4 py-2 text-gray-600">
-                            {page} / {totalPages}
-                        </span>
-                        <button
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                            disabled={page === totalPages}
-                            className="px-4 py-2 rounded-lg border border-gray-200 disabled:opacity-50 hover:bg-gray-50"
-                        >
-                            다음
-                        </button>
-                    </div>
+                    {/* Infinite Scroll Sentinel */}
+                    {visibleCount < scholarships.length && (
+                        <div ref={observerTarget} className="h-10 flex justify-center items-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#0984E3]"></div>
+                        </div>
+                    )}
                 </>
             )}
         </div>
