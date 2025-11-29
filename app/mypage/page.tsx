@@ -17,7 +17,7 @@ export default async function MyPage() {
     // Fetch extended user profile
     const { data: userData } = await supabase
         .from('users')
-        .select('*')
+        .select('*, is_subscribed')
         .eq('id', user.id)
         .single();
 

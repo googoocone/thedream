@@ -1,6 +1,13 @@
 import SchoolSearch from '@/components/ui/SchoolSearch'
 
-export default function StepHighSchool({ data, onChange }: { data: any, onChange: (field: string, value: any) => void }) {
+interface StepProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onChange: (field: string, value: any) => void;
+}
+
+export default function StepHighSchool({ data, onChange }: StepProps) {
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

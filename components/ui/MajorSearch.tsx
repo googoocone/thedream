@@ -25,6 +25,7 @@ export default function MajorSearch({ value, onChange }: MajorSearchProps) {
         if (value && value !== query) {
             setQuery(value)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value])
 
     useEffect(() => {

@@ -185,60 +185,62 @@ export default function ProfileEditPage() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-[280px] p-4 md:p-8 max-w-5xl mx-auto">
-                {/* Header (Mobile Logo) */}
-                <div className="md:hidden mb-6 flex justify-between items-center">
-                    <span className="text-xl font-bold text-[#2D3436]">The Dream</span>
-                    <span className="text-sm font-bold text-[var(--primary)]">{currentStep}/5 단계</span>
-                </div>
+            <main className="flex-1 md:ml-[280px] p-4 md:p-8">
+                <div className="max-w-5xl mx-auto">
+                    {/* Header (Mobile Logo) */}
+                    <div className="md:hidden mb-6 flex justify-between items-center">
+                        <span className="text-xl font-bold text-[#2D3436]">The Dream</span>
+                        <span className="text-sm font-bold text-[var(--primary)]">{currentStep}/5 단계</span>
+                    </div>
 
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        {steps[currentStep - 1].icon} {steps[currentStep - 1].label}
-                    </h1>
-                    <p className="text-gray-500">
-                        {currentStep === 1 && "기본적인 인적사항을 입력해주세요."}
-                        {currentStep === 2 && "출신 고등학교 정보를 입력해주세요."}
-                        {currentStep === 3 && "현재 대학교 정보를 입력해주세요."}
-                        {currentStep === 4 && "가계 정보를 입력해주세요."}
-                        {currentStep === 5 && "추가적인 정보를 자유롭게 입력해주세요."}
-                    </p>
-                </div>
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                            {steps[currentStep - 1].icon} {steps[currentStep - 1].label}
+                        </h1>
+                        <p className="text-gray-500">
+                            {currentStep === 1 && "기본적인 인적사항을 입력해주세요."}
+                            {currentStep === 2 && "출신 고등학교 정보를 입력해주세요."}
+                            {currentStep === 3 && "현재 대학교 정보를 입력해주세요."}
+                            {currentStep === 4 && "가계 정보를 입력해주세요."}
+                            {currentStep === 5 && "추가적인 정보를 자유롭게 입력해주세요."}
+                        </p>
+                    </div>
 
-                <BenefitBanner step={currentStep} />
+                    <BenefitBanner step={currentStep} />
 
-                <div className="bg-white rounded-[20px] p-5 md:p-8 shadow-sm border border-gray-100 mb-8">
-                    {currentStep === 1 && <StepPersonalInfo data={formData} onChange={handleChange} />}
-                    {currentStep === 2 && <StepHighSchool data={formData} onChange={handleChange} />}
-                    {currentStep === 3 && <StepUniversity data={formData} onChange={handleChange} />}
-                    {currentStep === 4 && <StepFinancial data={formData} onChange={handleChange} />}
-                    {currentStep === 5 && <StepAdditional data={formData} onChange={handleChange} />}
-                </div>
+                    <div className="bg-white rounded-[20px] p-5 md:p-8 shadow-sm border border-gray-100 mb-8">
+                        {currentStep === 1 && <StepPersonalInfo data={formData} onChange={handleChange} />}
+                        {currentStep === 2 && <StepHighSchool data={formData} onChange={handleChange} />}
+                        {currentStep === 3 && <StepUniversity data={formData} onChange={handleChange} />}
+                        {currentStep === 4 && <StepFinancial data={formData} onChange={handleChange} />}
+                        {currentStep === 5 && <StepAdditional data={formData} onChange={handleChange} />}
+                    </div>
 
-                <div className="flex justify-between items-center">
-                    <button
-                        onClick={() => router.push('/mypage')}
-                        className="text-gray-500 font-medium hover:text-gray-900"
-                    >
-                        나중에 하기
-                    </button>
-
-                    <div className="flex gap-3">
-                        {currentStep > 1 && (
-                            <button
-                                onClick={() => setCurrentStep(prev => prev - 1)}
-                                className="px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-bold hover:bg-gray-50"
-                            >
-                                ← 이전
-                            </button>
-                        )}
+                    <div className="flex justify-between items-center">
                         <button
-                            onClick={handleSave}
-                            disabled={saving}
-                            className="px-8 py-3 rounded-full bg-[#00CEC9] text-white font-bold hover:opacity-90 disabled:opacity-50 shadow-md shadow-[#00CEC9]/20"
+                            onClick={() => router.push('/mypage')}
+                            className="text-gray-500 font-medium hover:text-gray-900"
                         >
-                            {saving ? '저장 중...' : (currentStep === 5 ? '완료' : '다음 단계 →')}
+                            나중에 하기
                         </button>
+
+                        <div className="flex gap-3">
+                            {currentStep > 1 && (
+                                <button
+                                    onClick={() => setCurrentStep(prev => prev - 1)}
+                                    className="px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-bold hover:bg-gray-50"
+                                >
+                                    ← 이전
+                                </button>
+                            )}
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="px-8 py-3 rounded-full bg-[#00CEC9] text-white font-bold hover:opacity-90 disabled:opacity-50 shadow-md shadow-[#00CEC9]/20"
+                            >
+                                {saving ? '저장 중...' : (currentStep === 5 ? '완료' : '다음 단계 →')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </main>

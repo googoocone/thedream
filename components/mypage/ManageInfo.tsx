@@ -24,6 +24,7 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
         status: string;
         items?: { label: string; value: any }[];
         description?: string;
+        stepId: number;
     }
 
     const sections: Section[] = [
@@ -31,6 +32,7 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
             title: "기본 정보",
             icon: "📝",
             status: getStatus(['nickname', 'birth_date', 'gender', 'phone_number']),
+            stepId: 1,
             items: [
                 { label: "이름", value: userData?.nickname || "미입력" },
                 { label: "생년월일", value: userData?.birth_date || "미입력" },
@@ -42,6 +44,7 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
             title: "교육 수준",
             icon: "🎓",
             status: getStatus(['school_name', 'major', 'current_grade']),
+            stepId: 3, // University step
             items: [
                 { label: "학교", value: userData?.school_name || "미입력" },
                 { label: "학과", value: userData?.major || "미입력" },
@@ -53,6 +56,7 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
             title: "재정/가계",
             icon: "💰",
             status: getStatus(['income_bracket', 'family_size']),
+            stepId: 4,
             items: [
                 { label: "소득분위", value: userData?.income_bracket ? `${userData.income_bracket}분위` : "미입력" },
                 { label: "가구원수", value: userData?.family_size ? `${userData.family_size}인` : "미입력" },
@@ -61,9 +65,23 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
         {
             title: "기타",
             icon: "🎸",
-            status: userData?.additional_info ? 'completed' : 'incomplete_yellow',
+            status: userData?.special_criteria ? 'completed' : 'incomplete_yellow',
+            stepId: 5,
             items: [
-                { label: "특이사항", value: userData?.additional_info || "없음" }
+                {
+                    label: "특이사항",
+                    value: userData?.special_criteria?.map((c: string) => {
+                        const map: { [key: string]: string } = {
+                            multicultural: '다문화', single_parent: '한부모', grandparent_raised: '조손',
+                            north_korean: '북한이탈', foster_care: '자립준비', disabled_family: '장애인가정',
+                            farmer: '농업인', fisher: '어업인', livestock: '축산인',
+                            construction: '건설근로자', small_business: '소상공인', police_fire: '경찰/소방',
+                            disabled: '장애인', veteran: '보훈대상', arts_sports: '예체능', entrepreneur: '창업',
+                            basic_livelihood: '기초생활수급자', second_lowest: '차상위계층'
+                        };
+                        return map[c] || c;
+                    }).join(', ') || "없음"
+                }
             ]
         }
     ];
@@ -102,7 +120,7 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
                     )}
 
                     <div className="flex justify-start">
-                        <Link href={`/profile/edit?step=${index + 1}`} className={`px-4 py-2 rounded-full text-sm font-bold transition-colors inline-block ${section.status === 'completed'
+                        <Link href={`/profile/edit?step=${section.stepId}`} className={`px-4 py-2 rounded-full text-sm font-bold transition-colors inline-block ${section.status === 'completed'
                             ? 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                             : 'bg-[#FF9F43] text-white hover:opacity-90'
                             }`}>

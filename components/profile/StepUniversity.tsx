@@ -1,7 +1,14 @@
 import SchoolSearch from '@/components/ui/SchoolSearch'
 import MajorSearch from '@/components/ui/MajorSearch'
 
-export default function StepUniversity({ data, onChange }: { data: any, onChange: (field: string, value: any) => void }) {
+interface StepProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onChange: (field: string, value: any) => void;
+}
+
+export default function StepUniversity({ data, onChange }: StepProps) {
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -89,6 +96,8 @@ export default function StepUniversity({ data, onChange }: { data: any, onChange
                         <option value="university">4년제 대학교</option>
                         <option value="college">2/3년제 전문대학</option>
                         <option value="grad_school">대학원</option>
+                        <option value="cyber">사이버대학교</option>
+                        <option value="open">방송통신대학교</option>
                     </select>
                 </div>
 

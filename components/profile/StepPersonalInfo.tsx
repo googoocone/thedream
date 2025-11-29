@@ -2,7 +2,14 @@
 
 import AddressSearch from '@/components/ui/AddressSearch'
 
-export default function StepPersonalInfo({ data, onChange }: { data: any, onChange: (field: string, value: any) => void }) {
+interface StepProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any; // Using any for now as data structure is complex, but explicit any is better than implicit
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onChange: (field: string, value: any) => void;
+}
+
+export default function StepPersonalInfo({ data, onChange }: StepProps) {
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

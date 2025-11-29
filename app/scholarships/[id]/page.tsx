@@ -29,6 +29,11 @@ export default function ScholarshipDetailPage() {
     const supabase = createClient();
 
     useEffect(() => {
+        // Scroll to top on mount
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
         if (!id) return;
 
         const fetchScholarship = async () => {
@@ -108,8 +113,8 @@ export default function ScholarshipDetailPage() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex-1 py-4 text-center font-bold transition-colors ${activeTab === tab.id
-                                    ? 'text-[#0072FF] border-b-2 border-[#0072FF] bg-blue-50/30'
-                                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                ? 'text-[#0072FF] border-b-2 border-[#0072FF] bg-blue-50/30'
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
                             {tab.label}
@@ -156,7 +161,7 @@ export default function ScholarshipDetailPage() {
                                     </div>
                                     <div className="flex gap-4">
                                         <span className="text-gray-500 min-w-[80px]">지원 금액</span>
-                                        <span className="font-medium text-gray-800">{scholarship.amount}</span>
+                                        <span className="font-medium text-gray-800">{scholarship.support_details || scholarship.amount}</span>
                                     </div>
                                     {scholarship.extra_benefits && (
                                         <div className="flex gap-4">

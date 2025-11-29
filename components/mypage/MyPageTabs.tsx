@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import ManageInfo from './ManageInfo'
 import ScholarshipList from '@/components/scholarship/ScholarshipList'
 import { createClient } from '@/utils/supabase/client'
 import { calculateMatchScore, Scholarship } from '@/utils/matching'
-import ScholarshipCard from '@/components/ScholarshipCard'
+import HorizontalScholarshipCard from '@/components/HorizontalScholarshipCard'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import SubscriptionModal from '@/components/SubscriptionModal'
 
 interface MyPageTabsProps {
     userData?: any;
@@ -28,8 +30,14 @@ function calculateDDay(dateStr: string | null) {
 }
 
 export default function MyPageTabs({ userData }: MyPageTabsProps) {
-    const [activeTab, setActiveTab] = useState('matched')
+    const searchParams = useSearchParams()
+    const initialTab = searchParams.get('tab') || 'matched'
+    const [activeTab, setActiveTab] = useState(initialTab)
     const [matchedScholarships, setMatchedScholarships] = useState<(Scholarship & { score: number })[]>([])
+    const [visibleCount, setVisibleCount] = useState(8)
+    const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false)
+    const ITEMS_PER_LOAD = 8
+    const observerTarget = useRef(null)
     const [loading, setLoading] = useState(true)
     const supabase = createClient()
 
@@ -55,9 +63,10 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                     score: calculateMatchScore(userData, s)
                 }));
 
-                // Sort by score desc
-                scored.sort((a: any, b: any) => b.score - a.score);
-                setMatchedScholarships(scored);
+                // Filter out disqualified (score 0) and sort by score desc
+                const filtered = scored.filter((s: any) => s.score > 0);
+                filtered.sort((a: any, b: any) => b.score - a.score);
+                setMatchedScholarships(filtered);
             }
             setLoading(false);
         }
@@ -66,6 +75,35 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
             fetchAndMatch();
         }
     }, [activeTab, userData, supabase])
+
+    // Infinite Scroll Observer
+    const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+        const [target] = entries;
+        if (target.isIntersecting && !loading) {
+            setVisibleCount(prev => prev + ITEMS_PER_LOAD)
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(handleObserver, {
+            root: null,
+            rootMargin: "20px",
+            threshold: 1.0
+        });
+
+        const currentTarget = observerTarget.current;
+        if (currentTarget) {
+            observer.observe(currentTarget);
+        }
+
+        return () => {
+            if (currentTarget) {
+                observer.unobserve(currentTarget);
+            }
+        }
+    }, [handleObserver, activeTab]); // Re-attach observer when tab changes
+
+    const displayedMatchedScholarships = matchedScholarships.slice(0, visibleCount);
 
     return (
         <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100 min-h-[500px]">
@@ -100,22 +138,56 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                         {loading ? (
                             <div className="text-center py-20 text-gray-500">분석 중...</div>
                         ) : matchedScholarships.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {matchedScholarships.map((scholarship) => (
-                                    <Link key={scholarship.id} href={`/scholarships/${scholarship.id}`} className="relative block">
-                                        <div className="absolute top-4 right-4 z-10 bg-[#FF9F43] text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                                            {scholarship.score}% 일치
-                                        </div>
-                                        <ScholarshipCard
-                                            dDay={calculateDDay(scholarship.application_end)}
-                                            title={scholarship.name}
-                                            location={scholarship.foundation}
-                                            tags={scholarship.tags || []}
-                                            amount={scholarship.amount}
-                                        />
-                                    </Link>
-                                ))}
-                            </div>
+                            <>
+                                <div className="flex flex-col gap-4">
+                                    {displayedMatchedScholarships.map((scholarship, index) => {
+                                        // Subscription Logic:
+                                        // If user is NOT subscribed, only the FIRST item (index 0) is unlocked.
+                                        // All others (index > 0) are locked.
+                                        const isLocked = !userData?.is_subscribed && index > 0;
+
+                                        return (
+                                            <div key={scholarship.id} onClick={(e) => {
+                                                if (isLocked) {
+                                                    e.preventDefault();
+                                                    setIsSubscriptionModalOpen(true);
+                                                }
+                                            }}>
+                                                {isLocked ? (
+                                                    // Locked Card: No Link, just the card with blur
+                                                    <HorizontalScholarshipCard
+                                                        dDay={calculateDDay(scholarship.application_end)}
+                                                        title={scholarship.name}
+                                                        location={scholarship.foundation}
+                                                        tags={scholarship.tags || []}
+                                                        amount={scholarship.amount}
+                                                        isLocked={true}
+                                                    />
+                                                ) : (
+                                                    // Unlocked Card: Link to Detail Page
+                                                    <Link href={`/scholarships/${scholarship.id}`}>
+                                                        <HorizontalScholarshipCard
+                                                            dDay={calculateDDay(scholarship.application_end)}
+                                                            title={scholarship.name}
+                                                            location={scholarship.foundation}
+                                                            tags={scholarship.tags || []}
+                                                            amount={scholarship.amount}
+                                                            isLocked={false}
+                                                            score={scholarship.score}
+                                                        />
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {/* Infinite Scroll Sentinel */}
+                                {visibleCount < matchedScholarships.length && (
+                                    <div ref={observerTarget} className="h-10 flex justify-center items-center mt-4">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#0984E3]"></div>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="text-center py-20">
                                 <div className="text-4xl mb-4">🤔</div>
@@ -125,6 +197,13 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                         )}
                     </div>
                 )}
+
+                {/* Subscription Modal */}
+                <SubscriptionModal
+                    isOpen={isSubscriptionModalOpen}
+                    onClose={() => setIsSubscriptionModalOpen(false)}
+                    userId={userData?.id}
+                />
 
                 {activeTab === 'all' && (
                     <div>

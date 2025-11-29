@@ -21,6 +21,7 @@ export default function CountUpAnimation({ end, duration = 1000 }: { end: number
         };
 
         window.requestAnimationFrame(step);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [end, duration]);
 
     return <>{count}</>;

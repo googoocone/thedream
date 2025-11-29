@@ -36,7 +36,13 @@ export default function Navigation({ user }: { user: User | null }) {
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center gap-8">
+                <Link href="/mypage?tab=all" className="text-gray-600 hover:text-[var(--primary)] font-medium transition-colors">
+                    장학금 찾기
+                </Link>
+                <Link href="/mypage" className="text-gray-600 hover:text-[var(--primary)] font-medium transition-colors">
+                    마이페이지
+                </Link>
                 <AuthButton user={user} />
             </div>
 
@@ -61,9 +67,15 @@ export default function Navigation({ user }: { user: User | null }) {
                     {user ? (
                         <>
                             <div className="py-4 border-b border-gray-100">
-                                <span className="text-gray-500 text-sm">안녕하세요,</span><br />
                                 <span className="text-[var(--primary)] font-bold">{user.email?.split('@')[0]}</span>님
                             </div>
+                            <Link
+                                href="/mypage?tab=all"
+                                className="py-2 hover:text-[var(--primary)]"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                장학금 찾기
+                            </Link>
                             <Link
                                 href="/mypage"
                                 className="py-2 hover:text-[var(--primary)]"
@@ -80,6 +92,13 @@ export default function Navigation({ user }: { user: User | null }) {
                         </>
                     ) : (
                         <>
+                            <Link
+                                href="/mypage?tab=all"
+                                className="py-2 hover:text-[var(--primary)]"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                장학금 찾기
+                            </Link>
                             <Link
                                 href="/login"
                                 className="py-2 hover:text-[var(--primary)]"

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import ScholarshipCard from '@/components/ScholarshipCard'
+import HorizontalScholarshipCard from '@/components/HorizontalScholarshipCard'
 import Link from 'next/link'
 
 interface Scholarship {
@@ -55,11 +55,18 @@ export default function ScholarshipList() {
             const { data, error } = await query
 
             if (data) {
+                // Deduplicate by name (Client-side)
+                const uniqueData = data.filter((scholarship, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.name === scholarship.name
+                    ))
+                );
+
                 // 3. Custom Sorting: Active first, then Closed.
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                const sorted = data.sort((a, b) => {
+                const sorted = uniqueData.sort((a, b) => {
                     const dateA = a.application_end ? new Date(a.application_end) : new Date(9999, 11, 31);
                     const dateB = b.application_end ? new Date(b.application_end) : new Date(9999, 11, 31);
 
@@ -105,13 +112,14 @@ export default function ScholarshipList() {
             threshold: 1.0
         });
 
-        if (observerTarget.current) {
-            observer.observe(observerTarget.current);
+        const currentTarget = observerTarget.current;
+        if (currentTarget) {
+            observer.observe(currentTarget);
         }
 
         return () => {
-            if (observerTarget.current) {
-                observer.unobserve(observerTarget.current);
+            if (currentTarget) {
+                observer.unobserve(currentTarget);
             }
         }
     }, [handleObserver]);
@@ -151,10 +159,10 @@ export default function ScholarshipList() {
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="flex flex-col gap-4 mb-8">
                         {displayedScholarships.map((scholarship) => (
                             <Link key={scholarship.id} href={`/scholarships/${scholarship.id}`}>
-                                <ScholarshipCard
+                                <HorizontalScholarshipCard
                                     dDay={calculateDDay(scholarship.application_end)}
                                     title={scholarship.name}
                                     location={scholarship.foundation}

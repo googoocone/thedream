@@ -9,6 +9,7 @@ interface UserProfile {
     enrollment_status?: string;
     income_bracket?: number;
     family_size?: number;
+    special_criteria?: string[];
     [key: string]: unknown; // Allow other properties
 }
 
@@ -19,6 +20,7 @@ export function calculateCompletion(user: UserProfile | null): number {
         'nickname', 'birth_date', 'gender', 'phone_number', // Personal (4)
         'school_name', 'major', 'current_grade', 'enrollment_status', // Education (4)
         'income_bracket', 'family_size', // Financial (2)
+        'special_criteria', // Additional (1)
     ];
 
     let filledCount = 0;
