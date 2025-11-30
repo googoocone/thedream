@@ -256,3 +256,12 @@ export function extractUserKeywords(user: UserProfile): string[] {
     // ... (Keep existing logic if needed, or remove if fully deprecated)
     return [];
 }
+
+export function detectScholarshipRegions(scholarship: Scholarship): string[] {
+    const regions = new Set<string>();
+    if (scholarship.target_region) regions.add(`거주지: ${scholarship.target_region}`);
+    if (scholarship.target_parents_region) regions.add(`부모거주지: ${scholarship.target_parents_region}`);
+    if (scholarship.target_university_region) regions.add(`대학: ${scholarship.target_university_region}`);
+    if (scholarship.target_high_school_region) regions.add(`고교: ${scholarship.target_high_school_region}`);
+    return Array.from(regions);
+}
