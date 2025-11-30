@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const EDUCATION_LEVELS = [
     "고등학교 1학년",
@@ -56,6 +57,23 @@ export default function HeroSection() {
         };
     }, []);
 
+    const [birthYear, setBirthYear] = useState("");
+    const [birthMonth, setBirthMonth] = useState("");
+    const [birthDay, setBirthDay] = useState("");
+    const [education, setEducation] = useState("");
+    const [major, setMajor] = useState("");
+    const router = useRouter();
+
+    const handleSearch = () => {
+        const birth = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
+        const params = new URLSearchParams();
+        if (birthYear && birthMonth && birthDay) params.append('birth', birth);
+        if (education) params.append('edu', education);
+        if (major) params.append('major', major);
+
+        router.push(`/scholarships?${params.toString()}`);
+    };
+
     return (
         <section className="w-full max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col md:flex-row items-center justify-between gap-12">
             {/* Left Section: Inputs */}
@@ -76,15 +94,37 @@ export default function HeroSection() {
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-700">생년월일을 입력해주세요</label>
                         <div className="flex gap-2">
-                            <input type="text" placeholder="Year" className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none" />
-                            <input type="text" placeholder="Month" className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none" />
-                            <input type="text" placeholder="Day" className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none" />
+                            <input
+                                type="text"
+                                placeholder="Year"
+                                value={birthYear}
+                                onChange={(e) => setBirthYear(e.target.value)}
+                                className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Month"
+                                value={birthMonth}
+                                onChange={(e) => setBirthMonth(e.target.value)}
+                                className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Day"
+                                value={birthDay}
+                                onChange={(e) => setBirthDay(e.target.value)}
+                                className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                            />
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-700">현재 학력</label>
-                        <select className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none text-gray-600">
+                        <select
+                            value={education}
+                            onChange={(e) => setEducation(e.target.value)}
+                            className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none text-gray-600"
+                        >
                             <option value="">Select your school level</option>
                             {EDUCATION_LEVELS.map((level) => (
                                 <option key={level} value={level}>{level}</option>
@@ -94,7 +134,11 @@ export default function HeroSection() {
 
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-700">학교 전공</label>
-                        <select className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none text-gray-600">
+                        <select
+                            value={major}
+                            onChange={(e) => setMajor(e.target.value)}
+                            className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none text-gray-600"
+                        >
                             <option value="">Select your field of study</option>
                             {MAJORS.map((group) => (
                                 <optgroup key={group.group} label={group.group}>
@@ -106,7 +150,10 @@ export default function HeroSection() {
                         </select>
                     </div>
 
-                    <button className="w-full py-4 bg-[var(--primary)] text-white font-bold rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-orange-200">
+                    <button
+                        onClick={handleSearch}
+                        className="w-full py-4 bg-[var(--primary)] text-white font-bold rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-orange-200"
+                    >
                         장학금 확인하기
                     </button>
                 </div>

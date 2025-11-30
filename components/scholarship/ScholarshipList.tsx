@@ -14,6 +14,15 @@ interface Scholarship {
     application_end: string;
 }
 
+interface ScholarshipListProps {
+    initialFilters?: {
+        birth?: string;
+        edu?: string;
+        major?: string;
+    };
+    isGuestSearch?: boolean;
+}
+
 function calculateDDay(dateStr: string | null) {
     if (!dateStr) return "상시";
     const target = new Date(dateStr);
@@ -29,7 +38,7 @@ function calculateDDay(dateStr: string | null) {
     return `D-${diffDays}`;
 }
 
-export default function ScholarshipList() {
+export default function ScholarshipList({ initialFilters, isGuestSearch = false }: ScholarshipListProps) {
     const [scholarships, setScholarships] = useState<Scholarship[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
@@ -134,6 +143,32 @@ export default function ScholarshipList() {
 
     return (
         <div>
+            {/* Guest Search Incentive Banner */}
+            {isGuestSearch && (
+                <div className="bg-gradient-to-r from-[#0984E3] to-[#74b9ff] rounded-2xl p-6 mb-8 text-white shadow-lg transform transition-all hover:scale-[1.01]">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h3 className="text-xl font-bold mb-2">
+                                🚀 더 많은 장학금을 찾고 싶으신가요?
+                            </h3>
+                            <p className="text-blue-100">
+                                프로필을 완성하면 <strong>수백 개의 맞춤 장학금</strong>을 더 발견할 수 있어요!
+                                <br />
+                                <span className="text-sm opacity-80">
+                                    (현재 입력하신 정보: {initialFilters?.edu || '학력 미입력'}, {initialFilters?.major || '전공 미입력'})
+                                </span>
+                            </p>
+                        </div>
+                        <Link
+                            href="/signup"
+                            className="px-6 py-3 bg-white text-[#0984E3] font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-md whitespace-nowrap"
+                        >
+                            3초 만에 가입하고 확인하기
+                        </Link>
+                    </div>
+                </div>
+            )}
+
             {/* Search Bar */}
             <div className="mb-6">
                 <div className="relative">
@@ -161,15 +196,35 @@ export default function ScholarshipList() {
                 <>
                     <div className="flex flex-col gap-4 mb-8">
                         {displayedScholarships.map((scholarship) => (
-                            <Link key={scholarship.id} href={`/scholarships/${scholarship.id}`}>
-                                <HorizontalScholarshipCard
-                                    dDay={calculateDDay(scholarship.application_end)}
-                                    title={scholarship.name}
-                                    location={scholarship.foundation}
-                                    tags={scholarship.tags || []}
-                                    amount={scholarship.amount}
-                                />
-                            </Link>
+                            isGuestSearch ? (
+                                <div
+                                    key={scholarship.id}
+                                    onClick={() => {
+                                        if (confirm("상세 정보는 회원가입 후 확인할 수 있습니다.\n3초 만에 가입하고 모든 정보를 확인하세요! 🚀")) {
+                                            window.location.href = "/signup";
+                                        }
+                                    }}
+                                    className="cursor-pointer"
+                                >
+                                    <HorizontalScholarshipCard
+                                        dDay={calculateDDay(scholarship.application_end)}
+                                        title={scholarship.name}
+                                        location={scholarship.foundation}
+                                        tags={scholarship.tags || []}
+                                        amount={scholarship.amount}
+                                    />
+                                </div>
+                            ) : (
+                                <Link key={scholarship.id} href={`/scholarships/${scholarship.id}`}>
+                                    <HorizontalScholarshipCard
+                                        dDay={calculateDDay(scholarship.application_end)}
+                                        title={scholarship.name}
+                                        location={scholarship.foundation}
+                                        tags={scholarship.tags || []}
+                                        amount={scholarship.amount}
+                                    />
+                                </Link>
+                            )
                         ))}
                     </div>
 

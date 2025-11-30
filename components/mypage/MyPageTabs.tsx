@@ -9,6 +9,8 @@ import HorizontalScholarshipCard from '@/components/HorizontalScholarshipCard'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import SubscriptionModal from '@/components/SubscriptionModal'
+import ScholarshipCalendar from './ScholarshipCalendar'
+import DocumentVault from './DocumentVault'
 
 interface MyPageTabsProps {
     userData?: any;
@@ -42,10 +44,12 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
     const supabase = createClient()
 
     const tabs = [
+        { id: 'calendar', label: '장학금 달력', icon: '📅' },
         { id: 'matched', label: '맞춤 장학금', icon: '🤖' },
         { id: 'all', label: '전체 장학금', icon: '📋' },
         { id: 'liked', label: '찜한 장학금', icon: '❤️' },
         { id: 'manage_info', label: '내 정보 관리', icon: '⚙️' },
+        { id: 'documents', label: '서류 보관함', icon: '🗄️' },
     ]
 
     useEffect(() => {
@@ -223,6 +227,9 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                         <p className="text-sm text-gray-400 mt-2">(준비 중입니다)</p>
                     </div>
                 )}
+
+                {activeTab === 'calendar' && <ScholarshipCalendar />}
+                {activeTab === 'documents' && <DocumentVault userData={userData} />}
             </div>
         </div>
     )

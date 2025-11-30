@@ -41,7 +41,19 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
             ]
         },
         {
-            title: "교육 수준",
+            title: "고등학교",
+            icon: "🏫",
+            status: getStatus(['high_school_name']),
+            stepId: 2,
+            items: [
+                { label: "학교", value: userData?.high_school_name || "미입력" },
+                { label: "유형", value: userData?.high_school_type || "미입력" },
+                { label: "지역", value: userData?.high_school_address ? userData.high_school_address.split(' ')[0] : "미입력" },
+                { label: "내신", value: userData?.high_school_gpa ? `${userData.high_school_gpa}등급` : "미입력" },
+            ]
+        },
+        {
+            title: "대학교",
             icon: "🎓",
             status: getStatus(['school_name', 'major', 'current_grade']),
             stepId: 3, // University step

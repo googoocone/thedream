@@ -40,9 +40,9 @@ export default function Navigation({ user }: { user: User | null }) {
                 <Link href="/mypage?tab=all" className="text-gray-600 hover:text-[var(--primary)] font-medium transition-colors">
                     장학금 찾기
                 </Link>
-                <Link href="/mypage" className="text-gray-600 hover:text-[var(--primary)] font-medium transition-colors">
+                {/* <Link href="/mypage" className="text-gray-600 hover:text-[var(--primary)] font-medium transition-colors">
                     마이페이지
-                </Link>
+                </Link> */}
                 <AuthButton user={user} />
             </div>
 
