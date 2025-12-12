@@ -1,11 +1,12 @@
 import ScholarshipList from "@/components/scholarship/ScholarshipList";
 import Link from "next/link";
 
-export default function ScholarshipsPage({
+export default async function ScholarshipsPage({
     searchParams,
 }: {
-    searchParams: { [key: string]: string | string[] | undefined };
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+    const filters = await searchParams;
     return (
         <main className="min-h-screen bg-gray-50 py-12">
             <div className="max-w-7xl mx-auto px-6 space-y-8">
@@ -20,9 +21,10 @@ export default function ScholarshipsPage({
 
                 <ScholarshipList
                     initialFilters={{
-                        birth: searchParams.birth as string,
-                        edu: searchParams.edu as string,
-                        major: searchParams.major as string,
+                        birth: filters.birth as string,
+                        edu: filters.edu as string,
+                        major: filters.major as string,
+                        tag: filters.tag as string,
                     }}
                     isGuestSearch={true}
                 />

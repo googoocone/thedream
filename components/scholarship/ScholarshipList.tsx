@@ -19,6 +19,7 @@ interface ScholarshipListProps {
         birth?: string;
         edu?: string;
         major?: string;
+        tag?: string;
     };
     isGuestSearch?: boolean;
 }
@@ -54,11 +55,42 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
             // 1. Fetch ALL scholarships (needed for client-side custom sorting)
             let query = supabase
                 .from('scholarships')
-                .select('id, name, foundation, amount, tags, application_end')
+                .select('id, name, foundation, amount, tags, application_end, target_school_type, target_major_category')
 
-            // 2. Search filter (can still be done on DB side to reduce data)
+            // 2. Search filter
             if (searchTerm) {
                 query = query.ilike('name', `%${searchTerm}%`)
+            }
+
+            // 3. Category Filters
+            if (initialFilters?.edu) {
+                if (initialFilters.edu === 'university') {
+                    query = query.in('target_school_type', ['university', 'college'])
+                } else if (initialFilters.edu === 'high_school') {
+                    query = query.eq('target_school_type', 'high_school')
+                } else {
+                    query = query.eq('target_school_type', initialFilters.edu)
+                }
+            }
+
+            if (initialFilters?.major) {
+                // Approximate mapping for major categories if needed
+                if (initialFilters.major === 'arts_sports') {
+                    // Assuming DB value is '예체능' or similar. 
+                    query = query.eq('target_major_category', '예체능')
+                } else {
+                    query = query.eq('target_major_category', initialFilters.major)
+                }
+            }
+
+            // Tag filtering (e.g. startup, social_support)
+            // Note: DB 'tags' column is text[], so use .contains
+            // But 'category' might be better for 'startup'? OR 'special_criteria'?
+            // Providing basic support for 'tag' filter if passed
+            if (initialFilters?.tag) {
+                // If tag is 'startup', maybe look in special_criteria or tags
+                // For now, let's look in tags array
+                query = query.contains('tags', [initialFilters.tag])
             }
 
             const { data, error } = await query
