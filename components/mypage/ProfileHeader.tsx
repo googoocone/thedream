@@ -6,8 +6,9 @@ export default function ProfileHeader({ user }: { user: any }) {
     const name = user?.nickname || user?.email?.split("@")[0] || "홍길동";
     const university = user?.school_name || "학교 미입력";
     const major = user?.major || "전공 미입력";
-    const grade = user?.current_grade ? `${user.current_grade}학년` : "";
-    const semester = user?.current_semester ? `${user.current_semester}학기` : "";
+    const isGraduated = user?.enrollment_status === 'graduated';
+    const grade = isGraduated ? "졸업" : (user?.current_grade ? `${user.current_grade}학년` : "");
+    const semester = isGraduated ? "" : (user?.current_semester ? `${user.current_semester}학기` : "");
     const birthDate = user?.birth_date || "생년월일 미입력";
 
     const completion = calculateCompletion(user);

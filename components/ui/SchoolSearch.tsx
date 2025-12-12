@@ -96,12 +96,16 @@ export default function SchoolSearch({ value, onChange, type = 'univ', onSelect 
     }
 
     const handleSelectSchool = (school: { name: string, address: string }) => {
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current)
+        }
         setQuery(school.name)
         onChange(school.name)
         if (onSelect) {
             onSelect(school)
         }
         setIsOpen(false)
+        setFilteredSchools([]) // Also clear results to be sure
     }
 
     return (

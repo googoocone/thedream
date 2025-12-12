@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import FileUpload from '@/components/ui/FileUpload'
 
 export default function NewScholarshipPage() {
     const router = useRouter()
@@ -15,7 +16,8 @@ export default function NewScholarshipPage() {
         amount: '',
         application_start: '',
         application_end: '',
-        tags: '' // Comma separated
+        tags: '', // Comma separated
+        attachments: [] as { name: string; url: string; size: number; type: string }[]
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -127,6 +129,14 @@ export default function NewScholarshipPage() {
                         value={formData.description}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#0984E3] outline-none resize-none"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">첨부파일</label>
+                    <FileUpload
+                        onUploadComplete={(files) => setFormData(prev => ({ ...prev, attachments: files }))}
+                        existingFiles={formData.attachments}
                     />
                 </div>
 

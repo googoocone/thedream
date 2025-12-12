@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import FileUpload from '@/components/ui/FileUpload'
 
 // Dynamically import BlockNoteEditor to avoid SSR issues
 const BlockNoteEditor = dynamic(() => import('@/components/BlockNoteEditor'), { ssr: false })
@@ -148,7 +149,16 @@ export default function EditScholarshipPage() {
                     </div>
                 </section>
 
-                {/* 5. 상세 내용 (BlockNote) */}
+                {/* 5. 첨부파일 */}
+                <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">첨부파일</h2>
+                    <FileUpload
+                        onUploadComplete={(files) => setFormData((prev: any) => ({ ...prev, attachments: files }))}
+                        existingFiles={formData.attachments}
+                    />
+                </section>
+
+                {/* 6. 상세 내용 (BlockNote) */}
                 <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h2 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">상세 내용</h2>
                     <BlockNoteEditor

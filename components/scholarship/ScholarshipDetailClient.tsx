@@ -110,7 +110,7 @@ export default function ScholarshipDetailClient({ id }: { id: string }) {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex-1 py-4 text-center font-bold transition-colors ${activeTab === tab.id
+                            className={`flex-1 py-4 text-center font-bold transition-colors cursor-pointer ${activeTab === tab.id
                                 ? 'text-[#0072FF] border-b-2 border-[#0072FF] bg-blue-50/30'
                                 : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                                 }`}
@@ -254,9 +254,37 @@ export default function ScholarshipDetailClient({ id }: { id: string }) {
                                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <span className="text-xl">📂</span> 제출 서류
                                 </h3>
-                                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-line mb-4">
                                     {scholarship.required_documents || '-'}
                                 </p>
+
+                                {/* Attachments List */}
+                                {scholarship.attachments && scholarship.attachments.length > 0 && (
+                                    <div className="mt-6 border-t border-gray-100 pt-4">
+                                        <h4 className="text-sm font-bold text-gray-600 mb-3">첨부파일 다운로드</h4>
+                                        <div className="space-y-2">
+                                            {scholarship.attachments.map((file: any, index: number) => (
+                                                <a
+                                                    key={index}
+                                                    href={file.url}
+                                                    download={file.name}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-xl">📎</span>
+                                                        <div className="flex flex-col">
+                                                            <span className="font-bold text-[#0984E3] group-hover:underline text-sm md:text-base">{file.name}</span>
+                                                            <span className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</span>
+                                                        </div>
+                                                    </div>
+                                                    <span className="text-[#0984E3] bg-white p-2 rounded-full shadow-sm">⬇️</span>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Contact Info Card */}

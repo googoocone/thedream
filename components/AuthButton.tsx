@@ -22,7 +22,7 @@ export default function AuthButton({ user }: { user: User | null }) {
                 <div className="relative">
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 px-4 py-2 rounded-full transition-opacity flex items-center gap-2"
+                        className="text-sm font-medium text-white bg-[var(--primary)] hover:opacity-90 px-4 py-2 rounded-full transition-opacity flex items-center gap-2 cursor-pointer"
                     >
                         내 계정
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">

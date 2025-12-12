@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation'
 import SubscriptionModal from '@/components/SubscriptionModal'
 import ScholarshipCalendar from './ScholarshipCalendar'
 import DocumentVault from './DocumentVault'
+import { calculateCompletion } from '@/utils/profileCalculator'
 
 interface MyPageTabsProps {
     userData?: any;
@@ -36,6 +37,16 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
     const initialTab = searchParams.get('tab') || 'matched'
     const [activeTab, setActiveTab] = useState(initialTab)
     const [matchedScholarships, setMatchedScholarships] = useState<(Scholarship & { score: number })[]>([])
+
+    // Redirect to manage_info if profile is incomplete
+    useEffect(() => {
+        if (userData && !searchParams.get('tab')) {
+            const completion = calculateCompletion(userData);
+            if (completion < 30) {
+                setActiveTab('manage_info');
+            }
+        }
+    }, [userData, searchParams]);
     const [visibleCount, setVisibleCount] = useState(8)
     const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false)
     const ITEMS_PER_LOAD = 8
@@ -67,9 +78,25 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                     score: calculateMatchScore(userData, s)
                 }));
 
-                // Filter out disqualified (score 0) and sort by score desc
+
+                // Filter out disqualified (score 0), sort by D-Day status (available first) then score
                 const filtered = scored.filter((s: any) => s.score > 0);
-                filtered.sort((a: any, b: any) => b.score - a.score);
+
+                filtered.sort((a: any, b: any) => {
+                    const dDayA = calculateDDay(a.application_end);
+                    const dDayB = calculateDDay(b.application_end);
+
+                    const isExpiredA = dDayA === "마감";
+                    const isExpiredB = dDayB === "마감";
+
+                    // Prioritize Available (non-expired) over Expired
+                    if (!isExpiredA && isExpiredB) return -1;
+                    if (isExpiredA && !isExpiredB) return 1;
+
+                    // If both are same status, sort by score desc
+                    return b.score - a.score;
+                });
+
                 setMatchedScholarships(filtered);
             }
             setLoading(false);
@@ -117,7 +144,7 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-6 py-4 text-sm font-bold transition-colors whitespace-nowrap ${activeTab === tab.id
+                        className={`flex items-center gap-2 px-6 py-4 text-sm font-bold transition-colors whitespace-nowrap cursor-pointer ${activeTab === tab.id
                             ? 'text-[#FF9F43] border-b-2 border-[#FF9F43]'
                             : 'text-gray-400 hover:text-gray-600'
                             }`}
@@ -144,46 +171,99 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                         ) : matchedScholarships.length > 0 ? (
                             <>
                                 <div className="flex flex-col gap-4">
-                                    {displayedMatchedScholarships.map((scholarship, index) => {
-                                        // Subscription Logic:
-                                        // If user is NOT subscribed, only the FIRST item (index 0) is unlocked.
-                                        // All others (index > 0) are locked.
-                                        const isLocked = !userData?.is_subscribed && index > 0;
+                                    {/* Available Scholarships */}
+                                    {displayedMatchedScholarships
+                                        .filter(s => {
+                                            const dDay = calculateDDay(s.application_end);
+                                            return dDay !== "마감";
+                                        })
+                                        .map((scholarship, index) => {
+                                            const originalIndex = matchedScholarships.findIndex(s => s.id === scholarship.id);
+                                            const isLocked = !userData?.is_subscribed && originalIndex > 0;
 
-                                        return (
-                                            <div key={scholarship.id} onClick={(e) => {
-                                                if (isLocked) {
-                                                    e.preventDefault();
-                                                    setIsSubscriptionModalOpen(true);
-                                                }
-                                            }}>
-                                                {isLocked ? (
-                                                    // Locked Card: No Link, just the card with blur
-                                                    <HorizontalScholarshipCard
-                                                        dDay={calculateDDay(scholarship.application_end)}
-                                                        title={scholarship.name}
-                                                        location={scholarship.foundation}
-                                                        tags={scholarship.tags || []}
-                                                        amount={scholarship.amount}
-                                                        isLocked={true}
-                                                    />
-                                                ) : (
-                                                    // Unlocked Card: Link to Detail Page
-                                                    <Link href={`/scholarships/${scholarship.id}`}>
+                                            return (
+                                                <div key={scholarship.id} onClick={(e) => {
+                                                    if (isLocked) {
+                                                        e.preventDefault();
+                                                        setIsSubscriptionModalOpen(true);
+                                                    }
+                                                }}>
+                                                    {isLocked ? (
                                                         <HorizontalScholarshipCard
                                                             dDay={calculateDDay(scholarship.application_end)}
                                                             title={scholarship.name}
                                                             location={scholarship.foundation}
                                                             tags={scholarship.tags || []}
                                                             amount={scholarship.amount}
-                                                            isLocked={false}
-                                                            score={scholarship.score}
+                                                            isLocked={true}
                                                         />
-                                                    </Link>
-                                                )}
+                                                    ) : (
+                                                        <Link href={`/scholarships/${scholarship.id}`}>
+                                                            <HorizontalScholarshipCard
+                                                                dDay={calculateDDay(scholarship.application_end)}
+                                                                title={scholarship.name}
+                                                                location={scholarship.foundation}
+                                                                tags={scholarship.tags || []}
+                                                                amount={scholarship.amount}
+                                                                isLocked={false}
+                                                                score={scholarship.score}
+                                                            />
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+
+                                    {/* Expired Scholarships Divider & List */}
+                                    {displayedMatchedScholarships.some(s => calculateDDay(s.application_end) === "마감") && (
+                                        <>
+                                            <div className="py-6 text-center">
+                                                <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-600">
+                                                    <p className="font-bold mb-1">📢 현재 지원기간이 아니지만, 적합한 장학 리스트를 추천합니다.</p>
+                                                    <p>기존 내용을 확인하고 차기 선발을 고려해보세요!</p>
+                                                </div>
                                             </div>
-                                        );
-                                    })}
+
+                                            {displayedMatchedScholarships
+                                                .filter(s => calculateDDay(s.application_end) === "마감")
+                                                .map((scholarship, index) => {
+                                                    const originalIndex = matchedScholarships.findIndex(s => s.id === scholarship.id);
+                                                    const isLocked = !userData?.is_subscribed && originalIndex > 0;
+
+                                                    return (
+                                                        <div key={scholarship.id} onClick={(e) => {
+                                                            if (isLocked) {
+                                                                e.preventDefault();
+                                                                setIsSubscriptionModalOpen(true);
+                                                            }
+                                                        }}>
+                                                            {isLocked ? (
+                                                                <HorizontalScholarshipCard
+                                                                    dDay={calculateDDay(scholarship.application_end)}
+                                                                    title={scholarship.name}
+                                                                    location={scholarship.foundation}
+                                                                    tags={scholarship.tags || []}
+                                                                    amount={scholarship.amount}
+                                                                    isLocked={true}
+                                                                />
+                                                            ) : (
+                                                                <Link href={`/scholarships/${scholarship.id}`}>
+                                                                    <HorizontalScholarshipCard
+                                                                        dDay={calculateDDay(scholarship.application_end)}
+                                                                        title={scholarship.name}
+                                                                        location={scholarship.foundation}
+                                                                        tags={scholarship.tags || []}
+                                                                        amount={scholarship.amount}
+                                                                        isLocked={false}
+                                                                        score={scholarship.score}
+                                                                    />
+                                                                </Link>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                        </>
+                                    )}
                                 </div>
                                 {/* Infinite Scroll Sentinel */}
                                 {visibleCount < matchedScholarships.length && (

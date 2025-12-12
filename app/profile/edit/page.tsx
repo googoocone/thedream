@@ -63,6 +63,12 @@ export default function ProfileEditPage() {
     }
 
     const handleSave = async () => {
+        // Validation check
+        if (!isStepComplete(currentStep)) {
+            alert('필수 정보를 모두 입력해주세요.');
+            return;
+        }
+
         setSaving(true)
         const { data: { user } } = await supabase.auth.getUser()
 

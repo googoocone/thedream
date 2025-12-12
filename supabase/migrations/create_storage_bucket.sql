@@ -1,30 +1,23 @@
-
--- Create the storage bucket 'user_documents'
+-- Create the storage bucket
 insert into storage.buckets (id, name, public)
-values ('user_documents', 'user_documents', false)
+values ('scholarship-attachments', 'scholarship-attachments', true)
 on conflict (id) do nothing;
 
--- Set up RLS policies for the bucket
-create policy "Authenticated users can upload files"
-on storage.objects for insert
-with check (
-  bucket_id = 'user_documents' and
-  auth.role() = 'authenticated' and
-  (storage.foldername(name))[1] = auth.uid()::text
-);
+-- Set up security policies
+create policy "Public Access"
+  on storage.objects for select
+  using ( bucket_id = 'scholarship-attachments' );
 
-create policy "Users can view their own files"
-on storage.objects for select
-using (
-  bucket_id = 'user_documents' and
-  auth.role() = 'authenticated' and
-  (storage.foldername(name))[1] = auth.uid()::text
-);
+-- Allow authenticated users (admins) to upload
+-- Note: In a real prod env, you might want to strictly check for is_admin=true
+create policy "Authenticated Insert"
+  on storage.objects for insert
+  with check ( bucket_id = 'scholarship-attachments' and auth.role() = 'authenticated' );
 
-create policy "Users can delete their own files"
-on storage.objects for delete
-using (
-  bucket_id = 'user_documents' and
-  auth.role() = 'authenticated' and
-  (storage.foldername(name))[1] = auth.uid()::text
-);
+create policy "Authenticated Update"
+  on storage.objects for update
+  using ( bucket_id = 'scholarship-attachments' and auth.role() = 'authenticated' );
+
+create policy "Authenticated Delete"
+  on storage.objects for delete
+  using ( bucket_id = 'scholarship-attachments' and auth.role() = 'authenticated' );

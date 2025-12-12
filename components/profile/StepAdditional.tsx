@@ -24,18 +24,19 @@ export default function StepAdditional({ data, onChange }: StepProps) {
                 { id: 'single_parent', label: '한부모 가정' },
                 { id: 'grandparent_raised', label: '조손 가정' },
                 { id: 'north_korean', label: '북한이탈주민' },
-                { id: 'foster_care', label: '자립준비청년 (보호종료아동)' },
                 { id: 'disabled_family', label: '장애인 가정' },
                 { id: 'basic_livelihood', label: '기초생활수급자' },
                 { id: 'second_lowest', label: '차상위계층' },
+                { id: 'national_merit_family', label: '국가유공자 가정' },
+                { id: 'multi_child', label: '다자녀 가정' },
+                { id: 'veteran', label: '국가유공자 (보훈대상)' },
             ]
         },
         {
             title: "🚜 부모님 직업 (Parents' Job)",
             items: [
-                { id: 'farmer', label: '농업인 자녀' },
-                { id: 'fisher', label: '어업인 자녀' },
-                { id: 'livestock', label: '축산인 자녀' },
+                { id: 'soldier_family', label: '군인(군무원) 가정' },
+                { id: 'farmer_fisherman_family', label: '농축어업인 가정' },
                 { id: 'construction', label: '건설근로자 자녀' },
                 { id: 'small_business', label: '소상공인 자녀' },
                 { id: 'police_fire', label: '경찰/소방관 자녀' },
@@ -44,10 +45,11 @@ export default function StepAdditional({ data, onChange }: StepProps) {
         {
             title: "👤 본인 해당 (Personal Status)",
             items: [
+                { id: 'foster_care', label: '자립준비청년 (보호종료아동)' },
                 { id: 'disabled', label: '장애인' },
-                { id: 'veteran', label: '국가유공자 (보훈대상)' },
                 { id: 'arts_sports', label: '예체능 특기자' },
                 { id: 'entrepreneur', label: '창업 준비생' },
+                { id: 'sme_employee', label: '중소기업 재직자' },
             ]
         }
     ];
