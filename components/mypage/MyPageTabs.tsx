@@ -97,7 +97,14 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                     return b.score - a.score;
                 });
 
-                setMatchedScholarships(filtered);
+                // Deduplicate by group_name (keep the highest scored/most urgent one which is first after sort)
+                const uniqueMatched = filtered.filter((scholarship: any, index: number, self: any[]) =>
+                    index === self.findIndex((t: any) => (
+                        (t.group_name || t.name) === (scholarship.group_name || scholarship.name)
+                    ))
+                );
+
+                setMatchedScholarships(uniqueMatched);
             }
             setLoading(false);
         }
@@ -191,7 +198,7 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                                                     {isLocked ? (
                                                         <HorizontalScholarshipCard
                                                             dDay={calculateDDay(scholarship.application_end)}
-                                                            title={scholarship.name}
+                                                            title={scholarship.group_name || scholarship.name}
                                                             location={scholarship.foundation}
                                                             tags={scholarship.tags || []}
                                                             amount={scholarship.amount}
@@ -201,7 +208,7 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                                                         <Link href={`/scholarships/${scholarship.id}`}>
                                                             <HorizontalScholarshipCard
                                                                 dDay={calculateDDay(scholarship.application_end)}
-                                                                title={scholarship.name}
+                                                                title={scholarship.group_name || scholarship.name}
                                                                 location={scholarship.foundation}
                                                                 tags={scholarship.tags || []}
                                                                 amount={scholarship.amount}
@@ -240,7 +247,7 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                                                             {isLocked ? (
                                                                 <HorizontalScholarshipCard
                                                                     dDay={calculateDDay(scholarship.application_end)}
-                                                                    title={scholarship.name}
+                                                                    title={scholarship.group_name || scholarship.name}
                                                                     location={scholarship.foundation}
                                                                     tags={scholarship.tags || []}
                                                                     amount={scholarship.amount}
@@ -250,7 +257,7 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                                                                 <Link href={`/scholarships/${scholarship.id}`}>
                                                                     <HorizontalScholarshipCard
                                                                         dDay={calculateDDay(scholarship.application_end)}
-                                                                        title={scholarship.name}
+                                                                        title={scholarship.group_name || scholarship.name}
                                                                         location={scholarship.foundation}
                                                                         tags={scholarship.tags || []}
                                                                         amount={scholarship.amount}
