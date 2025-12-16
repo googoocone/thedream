@@ -20,6 +20,28 @@ function calculateDDay(dateStr: string | null) {
     return `D-${diffDays}`;
 }
 
+// Helper to handle escaped newlines and BlockNote JSON
+function formatText(text: string | null) {
+    if (!text) return text;
+
+    try {
+        // Try to parse as JSON (for BlockNote content)
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) {
+            return parsed.map((block: any) => {
+                if (block.content && Array.isArray(block.content)) {
+                    return block.content.map((c: any) => c.text || '').join('');
+                }
+                return '';
+            }).filter(Boolean).join('\n');
+        }
+    } catch (e) {
+        // Not JSON, fall back to plain text handling
+    }
+
+    return text.replace(/\\n/g, '\n');
+}
+
 export default function ScholarshipDetailClient({ id }: { id: string }) {
     const [scholarship, setScholarship] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -205,7 +227,7 @@ export default function ScholarshipDetailClient({ id }: { id: string }) {
                                     ))}
                                 </div>
                                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                    {scholarship.target_description}
+                                    {formatText(scholarship.target_description)}
                                 </p>
                             </div>
 
@@ -216,7 +238,7 @@ export default function ScholarshipDetailClient({ id }: { id: string }) {
                                 </h3>
                                 <div className="bg-gray-50 p-6 rounded-xl">
                                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {scholarship.eligibility || '상세 자격 요건이 없습니다.'}
+                                        {formatText(scholarship.eligibility) || '상세 자격 요건이 없습니다.'}
                                     </p>
                                 </div>
                             </div>
@@ -255,7 +277,7 @@ export default function ScholarshipDetailClient({ id }: { id: string }) {
                                     <span className="text-xl">📂</span> 제출 서류
                                 </h3>
                                 <p className="text-gray-700 leading-relaxed whitespace-pre-line mb-4">
-                                    {scholarship.required_documents || '-'}
+                                    {formatText(scholarship.required_documents) || '-'}
                                 </p>
 
                                 {/* Attachments List */}

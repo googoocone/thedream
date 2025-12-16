@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import HorizontalScholarshipCard from '@/components/HorizontalScholarshipCard'
 import Link from 'next/link'
+import LoginModal from '@/components/ui/LoginModal'
 
 interface Scholarship {
     id: string;
@@ -44,6 +45,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
     const [visibleCount, setVisibleCount] = useState(8)
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
     const ITEMS_PER_LOAD = 8
     const supabase = createClient()
     const observerTarget = useRef(null)
@@ -84,12 +86,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
             }
 
             // Tag filtering (e.g. startup, social_support)
-            // Note: DB 'tags' column is text[], so use .contains
-            // But 'category' might be better for 'startup'? OR 'special_criteria'?
-            // Providing basic support for 'tag' filter if passed
             if (initialFilters?.tag) {
-                // If tag is 'startup', maybe look in special_criteria or tags
-                // For now, let's look in tags array
                 query = query.contains('tags', [initialFilters.tag])
             }
 
@@ -175,6 +172,11 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
 
     return (
         <div>
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setIsLoginModalOpen(false)}
+            />
+
             {/* Guest Search Incentive Banner */}
             {isGuestSearch && (
                 <div className="bg-gradient-to-r from-[#0984E3] to-[#74b9ff] rounded-2xl p-6 mb-8 text-white shadow-lg transform transition-all hover:scale-[1.01]">
@@ -231,11 +233,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
                             isGuestSearch ? (
                                 <div
                                     key={scholarship.id}
-                                    onClick={() => {
-                                        if (confirm("상세 정보는 회원가입 후 확인할 수 있습니다.\n3초 만에 가입하고 모든 정보를 확인하세요! 🚀")) {
-                                            window.location.href = "/signup";
-                                        }
-                                    }}
+                                    onClick={() => setIsLoginModalOpen(true)}
                                     className="cursor-pointer"
                                 >
                                     <HorizontalScholarshipCard

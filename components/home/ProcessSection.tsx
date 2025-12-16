@@ -10,6 +10,7 @@ const steps = [
         title: "STEP 1. 프로필 등록",
         description: "나의 학교, 학점, 소득분위 등 기본 정보를 입력하세요.\n3분이면 충분합니다.",
         icon: User,
+        image: "/processSection_p1.png",
         imagePlaceholder: "프로필 입력 화면 (step1.png)"
     },
     {
@@ -17,6 +18,7 @@ const steps = [
         title: "STEP 2. AI 맞춤 매칭",
         description: "수많은 장학금 중 지원 가능한 공고만 AI가 자동으로 찾아줍니다.\n매일 업데이트되는 공고를 놓치지 마세요.",
         icon: Sparkles,
+        image: "/processSection_p2.png",
         imagePlaceholder: "AI 매칭 결과 화면 (step2.png)"
     },
     {
@@ -24,6 +26,7 @@ const steps = [
         title: "STEP 3. 간편한 관리",
         description: "관심 있는 장학금을 저장하고 지원 일정을 관리하세요.\n합격 확률을 높여드립니다.",
         icon: CheckCircle,
+        image: "/processSection_p3.png",
         imagePlaceholder: "장학금 상세 및 관리 화면 (step3.png)"
     }
 ]
@@ -47,10 +50,10 @@ export default function ProcessSection() {
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                        장학금 신청, <span className="text-[var(--primary)]">이렇게 쉬워집니다</span>
+                        장학금 검색, <span className="text-[var(--primary)]">이렇게 쉬워집니다</span>
                     </h2>
                     <p className="text-gray-500">
-                        복잡한 검색 없이 나에게 딱 맞는 장학금을 찾아보세요
+                        복잡한 검색 없이 나에게 딱 맞는 장학금을 찾아드려요
                     </p>
                 </div>
 
@@ -69,14 +72,22 @@ export default function ProcessSection() {
                                             transition={{ duration: 0.3 }}
                                             className="absolute inset-0 flex items-center justify-center bg-gray-50"
                                         >
-                                            {/* Placeholder for Screenshot */}
-                                            <div className="text-center p-8">
-                                                <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center text-gray-400">
-                                                    <step.icon size={32} />
+                                            {/* Show Image if available, otherwise show Placeholder */}
+                                            {step.image ? (
+                                                <img
+                                                    src={step.image}
+                                                    alt={step.title}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="text-center p-8">
+                                                    <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center text-gray-400">
+                                                        <step.icon size={32} />
+                                                    </div>
+                                                    <p className="text-gray-400 font-medium">{step.imagePlaceholder}</p>
+                                                    <p className="text-sm text-gray-300 mt-2">1024 x 768 recommended</p>
                                                 </div>
-                                                <p className="text-gray-400 font-medium">{step.imagePlaceholder}</p>
-                                                <p className="text-sm text-gray-300 mt-2">1024 x 768 recommended</p>
-                                            </div>
+                                            )}
                                         </motion.div>
                                     )
                                 ))}

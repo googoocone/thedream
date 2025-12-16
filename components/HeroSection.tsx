@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 const EDUCATION_LEVELS = [
     "고등학교 1학년",
@@ -121,34 +122,22 @@ export default function HeroSection() {
 
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-700">현재 학력</label>
-                        <select
+                        <CustomSelect
                             value={education}
-                            onChange={(e) => setEducation(e.target.value)}
-                            className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none text-gray-600"
-                        >
-                            <option value="">Select your school level</option>
-                            {EDUCATION_LEVELS.map((level) => (
-                                <option key={level} value={level}>{level}</option>
-                            ))}
-                        </select>
+                            onChange={setEducation}
+                            options={EDUCATION_LEVELS}
+                            placeholder="Select your school level"
+                        />
                     </div>
 
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-700">학교 전공</label>
-                        <select
+                        <CustomSelect
                             value={major}
-                            onChange={(e) => setMajor(e.target.value)}
-                            className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none text-gray-600"
-                        >
-                            <option value="">Select your field of study</option>
-                            {MAJORS.map((group) => (
-                                <optgroup key={group.group} label={group.group}>
-                                    {group.options.map((option) => (
-                                        <option key={option} value={option}>{option}</option>
-                                    ))}
-                                </optgroup>
-                            ))}
-                        </select>
+                            onChange={setMajor}
+                            options={MAJORS}
+                            placeholder="Select your field of study"
+                        />
                     </div>
 
                     <button
