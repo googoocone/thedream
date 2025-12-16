@@ -9,6 +9,7 @@ import LoginModal from '@/components/ui/LoginModal'
 interface Scholarship {
     id: string;
     name: string;
+    group_name?: string; // Added group_name
     foundation: string;
     amount: string;
     tags: string[];
@@ -54,10 +55,10 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
         const fetchAndSortScholarships = async () => {
             setLoading(true)
 
-            // 1. Fetch ALL scholarships (needed for client-side custom sorting)
+            // 1. Fetch ALL scholarships (Added group_name)
             let query = supabase
                 .from('scholarships')
-                .select('id, name, foundation, amount, tags, application_end, target_school_type, target_major_category')
+                .select('id, name, group_name, foundation, amount, tags, application_end, target_school_type, target_major_category')
 
             // 2. Search filter
             if (searchTerm) {
@@ -93,10 +94,10 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
             const { data, error } = await query
 
             if (data) {
-                // Deduplicate by name (Client-side)
+                // Deduplicate by group_name if exists, otherwise name (Client-side)
                 const uniqueData = data.filter((scholarship, index, self) =>
                     index === self.findIndex((t) => (
-                        t.name === scholarship.name
+                        (t.group_name || t.name) === (scholarship.group_name || scholarship.name)
                     ))
                 );
 
@@ -133,7 +134,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
         }, 300)
 
         return () => clearTimeout(timer)
-    }, [supabase, searchTerm])
+    }, [supabase, searchTerm]) // Removed 'initialFilters' from deps to avoid loop if object is unstable, but user didn't change this.
 
     // Infinite Scroll Observer
     const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
@@ -238,7 +239,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
                                 >
                                     <HorizontalScholarshipCard
                                         dDay={calculateDDay(scholarship.application_end)}
-                                        title={scholarship.name}
+                                        title={scholarship.group_name || scholarship.name} // Display Group Name
                                         location={scholarship.foundation}
                                         tags={scholarship.tags || []}
                                         amount={scholarship.amount}
@@ -248,7 +249,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
                                 <Link key={scholarship.id} href={`/scholarships/${scholarship.id}`}>
                                     <HorizontalScholarshipCard
                                         dDay={calculateDDay(scholarship.application_end)}
-                                        title={scholarship.name}
+                                        title={scholarship.group_name || scholarship.name} // Display Group Name
                                         location={scholarship.foundation}
                                         tags={scholarship.tags || []}
                                         amount={scholarship.amount}

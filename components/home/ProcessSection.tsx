@@ -50,7 +50,7 @@ export default function ProcessSection() {
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                        장학금 검색, <span className="text-[var(--primary)]">이렇게 쉬워집니다</span>
+                        장학금 찾기, <span className="text-[var(--primary)]">이렇게 쉬워집니다</span>
                     </h2>
                     <p className="text-gray-500">
                         복잡한 검색 없이 나에게 딱 맞는 장학금을 찾아드려요
