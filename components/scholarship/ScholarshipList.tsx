@@ -58,7 +58,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
             // 1. Fetch ALL scholarships (Added group_name)
             let query = supabase
                 .from('scholarships')
-                .select('id, name, group_name, foundation, amount, tags, application_end, target_school_type, target_major_category')
+                .select('id, name, group_name, foundation, amount, tags, application_end, target_school_type, target_major_category, target_universities')
 
             // 2. Search filter
             if (searchTerm) {

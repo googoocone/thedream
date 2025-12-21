@@ -5,12 +5,14 @@ import { majorCategories } from '@/data/majorCategories'
 
 interface MajorSearchProps {
     value: string;
+    largeCategory?: string;
+    middleCategory?: string;
     onChange: (value: string, largeCategory?: string, middleCategory?: string) => void;
 }
 
-export default function MajorSearch({ value, onChange }: MajorSearchProps) {
-    const [largeCategory, setLargeCategory] = useState('')
-    const [middleCategory, setMiddleCategory] = useState('')
+export default function MajorSearch({ value, largeCategory: initialLargeCategory, middleCategory: initialMiddleCategory, onChange }: MajorSearchProps) {
+    const [largeCategory, setLargeCategory] = useState(initialLargeCategory || '')
+    const [middleCategory, setMiddleCategory] = useState(initialMiddleCategory || '')
     const [majorName, setMajorName] = useState('')
 
     const [query, setQuery] = useState('')
@@ -20,13 +22,24 @@ export default function MajorSearch({ value, onChange }: MajorSearchProps) {
     const wrapperRef = useRef<HTMLDivElement>(null)
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-    // Initialize state from value if possible (simple heuristic)
+    // Initialize state from props
     useEffect(() => {
-        if (value && value !== query) {
+        if (value !== undefined && value !== query) {
             setQuery(value)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value])
+
+    useEffect(() => {
+        if (initialLargeCategory !== undefined) {
+            setLargeCategory(initialLargeCategory || '')
+        }
+    }, [initialLargeCategory])
+
+    useEffect(() => {
+        if (initialMiddleCategory !== undefined) {
+            setMiddleCategory(initialMiddleCategory || '')
+        }
+    }, [initialMiddleCategory])
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {

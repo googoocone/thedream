@@ -60,6 +60,7 @@ export default function ManageInfo({ userData }: ManageInfoProps) {
             items: [
                 { label: "학교", value: userData?.school_name || "미입력" },
                 { label: "학과", value: userData?.major || "미입력" },
+                { label: "계열", value: [userData?.major_large_category, userData?.major_middle_category].filter(Boolean).join(' > ') || "미입력" },
                 { label: "학년", value: userData?.current_grade ? `${userData.current_grade}학년` : "미입력" },
                 { label: "학점", value: userData?.gpa ? `${userData.gpa} / 4.5` : "미입력" },
             ]

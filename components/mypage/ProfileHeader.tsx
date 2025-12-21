@@ -5,7 +5,9 @@ import { calculateCompletion } from "@/utils/profileCalculator";
 export default function ProfileHeader({ user }: { user: any }) {
     const name = user?.nickname || user?.email?.split("@")[0] || "홍길동";
     const university = user?.school_name || "학교 미입력";
-    const major = user?.major || "전공 미입력";
+    const majorName = user?.major || "전공 미입력";
+    const majorCategories = [user?.major_large_category, user?.major_middle_category].filter(Boolean).join('/');
+    const major = majorCategories ? `${majorName} (${majorCategories})` : majorName;
     const isGraduated = user?.enrollment_status === 'graduated';
     const grade = isGraduated ? "졸업" : (user?.current_grade ? `${user.current_grade}학년` : "");
     const semester = isGraduated ? "" : (user?.current_semester ? `${user.current_semester}학기` : "");

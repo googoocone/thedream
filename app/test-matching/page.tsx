@@ -13,7 +13,7 @@ export default function TestMatchingPage() {
     const [useMockUser, setUseMockUser] = useState(false)
     const supabase = createClient()
 
-    const mockUser: UserProfile = {
+    const [mockUser, setMockUser] = useState<UserProfile>({
         id: "44c37da9-f9dc-4422-a9f5-50c632da891e",
         email: "snu910501@naver.com",
         nickname: "snu910501",
@@ -35,7 +35,7 @@ export default function TestMatchingPage() {
         family_size: 1,
         high_school_type: "general",
         additional_info: "택배업 종사자의 자녀입니다."
-    }
+    })
 
     useEffect(() => {
         const fetchData = async () => {
@@ -114,7 +114,25 @@ export default function TestMatchingPage() {
                     <h2 className="font-bold mb-4">
                         {useMockUser ? '테스트 프로필 (Mock)' : '내 프로필'} 키워드
                     </h2>
+
+                    {useMockUser && (
+                        <div className="mb-4 p-4 bg-white rounded border">
+                            <label className="block text-sm font-bold mb-2">테스트용 학교 이름 변경:</label>
+                            <input
+                                type="text"
+                                value={activeUser.school_name || ''}
+                                onChange={(e) => {
+                                    setMockUser(prev => ({ ...prev, school_name: e.target.value }))
+                                }}
+                                className="border p-2 rounded w-full"
+                                placeholder="예: 서울대학교"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">이 값을 변경하면 매칭 점수가 실시간으로 재계산됩니다.</p>
+                        </div>
+                    )}
+
                     <div className="flex flex-wrap gap-2">
+
                         {extractUserKeywords(activeUser).map((k, i) => (
                             <span key={i} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                                 {k}

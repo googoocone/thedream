@@ -149,6 +149,8 @@ export default function StepUniversity({ data, onChange }: StepProps) {
                     <label className="text-sm font-bold text-gray-900">학과/전공 <span className="text-red-500">*</span></label>
                     <MajorSearch
                         value={data.major}
+                        largeCategory={data.major_large_category}
+                        middleCategory={data.major_middle_category}
                         onChange={(value: string, large?: string, middle?: string) => {
                             onChange('major', value)
                             if (large !== undefined) onChange('major_large_category', large)
