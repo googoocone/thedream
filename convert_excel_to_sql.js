@@ -1,11 +1,11 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
 
-const workbook = XLSX.readFile('scholarships.xlsx');
+const workbook = XLSX.readFile('test_scholarships.xlsx');
 const sheetName = workbook.SheetNames[0];
 const worksheet = workbook.Sheets[sheetName];
 
-const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, range: 'A1:AZ5000' });
 
 // Skip first 3 rows (0: Group Header, 1: Column Header (KR), 2: Column Header (EN))
 // Data starts from index 3
@@ -115,9 +115,20 @@ const arrayCols = ['target_hashtags', 'special_criteria'];
 
 let sqlStatements = [];
 
-dataRows.forEach(row => {
+dataRows.forEach((row, rowIdx) => {
     // Only process if name exists
     if (!row[1]) return;
+
+    // DEBUG: Check Row 0 (Unhae)
+    if (rowIdx === 0) {
+        console.log('DEBUG: Row 0 Full:', JSON.stringify(row, null, 2));
+        console.log('DEBUG: Row[1] (Name):', row[1]);
+        // process.exit(0); // Can't exit inside loop easily without throwing or just returning. 
+        // Let's just return to stop verifying tons of logs, but we want to see if it generates SQL.
+    }
+
+    // Only process first few rows for debugging
+    if (rowIdx > 2) return;
 
     let cols = [];
     let vals = [];

@@ -28,18 +28,25 @@ export default function StepAdditional({ data, onChange }: StepProps) {
                 { id: 'basic_livelihood', label: '기초생활수급자' },
                 { id: 'second_lowest', label: '차상위계층' },
                 { id: 'national_merit_family', label: '국가유공자 가정' },
+                { id: 'injured_soldier_family', label: '공상/순직 군인 가정' },
+                { id: 'injured_official_family', label: '공상/순직 경찰/소방/공무원 가정' },
                 { id: 'multi_child', label: '다자녀 가정' },
                 { id: 'veteran', label: '국가유공자 (보훈대상)' },
+                { id: 'descendant_patriot', label: '독립유공자 후손' },
+                { id: 'lh_housing', label: 'LH 임대주택 거주' },
             ]
         },
         {
             title: "🚜 부모님 직업 (Parents' Job)",
             items: [
-                { id: 'soldier_family', label: '군인(군무원) 가정' },
+                { id: 'soldier_family', label: '직업군인 가정' },
+                { id: 'civilian_military_employee_family', label: '군무원 가정' },
                 { id: 'farmer_fisherman_family', label: '농축어업인 가정' },
                 { id: 'construction', label: '건설근로자 자녀' },
                 { id: 'small_business', label: '소상공인 자녀' },
                 { id: 'police_fire', label: '경찰/소방관 자녀' },
+                { id: 'delivery_driver', label: '택배기사 (CJ/롯데/한진)' },
+                { id: 'sanitation_worker', label: '환경미화원' },
             ]
         },
         {
@@ -50,6 +57,15 @@ export default function StepAdditional({ data, onChange }: StepProps) {
                 { id: 'arts_sports', label: '예체능 특기자' },
                 { id: 'entrepreneur', label: '창업 준비생' },
                 { id: 'sme_employee', label: '중소기업 재직자' },
+                { id: 'seoul_learn_mentor', label: '서울런 멘토 경험 (8개월 이상)' },
+                { id: 'public_benefit', label: '사회공익활동 경험' },
+            ]
+        },
+        {
+            title: "🪖 병역 사항 (Military Service)",
+            items: [
+                { id: 'military_completed', label: '군필' },
+                { id: 'military_exempt', label: '면제' },
             ]
         }
     ];

@@ -77,19 +77,26 @@ export default function ScholarshipCalendar() {
                 return s.application_end === dateStr;
             });
 
-            if (activeScholarships.length > 0) {
+            // Group by group_name or id to count unique "items"
+            const uniqueGroups = new Set(activeScholarships.map(s => s.group_name || s.id));
+
+            if (uniqueGroups.size > 0) {
                 return (
                     <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-0.5 px-1">
-                        {activeScholarships.slice(0, 4).map((s, i) => {
-                            const isDeadline = s.application_end === dateStr;
+                        {Array.from(uniqueGroups).slice(0, 4).map((groupId, i) => {
+                            // Check if any scholarship in this group has a deadline today
+                            const isDeadline = activeScholarships.some(s =>
+                                (s.group_name === groupId || s.id === groupId) && s.application_end === dateStr
+                            );
+
                             return (
                                 <div
-                                    key={s.id}
+                                    key={groupId}
                                     className={`w-1 h-1 rounded-full ${isDeadline ? 'bg-red-500' : 'bg-[#0984E3]'}`}
                                 ></div>
                             );
                         })}
-                        {activeScholarships.length > 4 && (
+                        {uniqueGroups.size > 4 && (
                             <div className="w-1 h-1 rounded-full bg-gray-300"></div>
                         )}
                     </div>
@@ -98,6 +105,16 @@ export default function ScholarshipCalendar() {
         }
         return null;
     };
+
+    // Group selectedDateScholarships for display
+    const groupedScholarships = selectedDateScholarships.reduce((acc, curr) => {
+        const key = curr.group_name || curr.id;
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push(curr);
+        return acc;
+    }, {} as Record<string, Scholarship[]>);
 
     return (
         <div className="flex flex-col md:flex-row gap-8">
@@ -163,16 +180,22 @@ export default function ScholarshipCalendar() {
                 </h3>
 
                 <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
-                    {selectedDateScholarships.length > 0 ? (
-                        selectedDateScholarships.map(scholarship => {
-                            const isDeadline = value instanceof Date && scholarship.application_end === value.toISOString().split('T')[0];
+                    {Object.keys(groupedScholarships).length > 0 ? (
+                        Object.values(groupedScholarships).map(group => {
+                            const scholarship = group[0]; // Display info from the first one
+                            const isGroup = group.length > 1;
+                            const isDeadline = value instanceof Date && group.some(s => s.application_end === value.toISOString().split('T')[0]);
+
+                            // Use group_name if available, otherwise name
+                            const displayName = scholarship.group_name || scholarship.name;
+
                             return (
                                 <Link
                                     key={scholarship.id}
                                     href={`/scholarships/${scholarship.id}`}
                                     className={`block p-4 rounded-xl border transition-all ${isDeadline
-                                            ? 'border-red-200 bg-red-50 hover:border-red-300'
-                                            : 'border-gray-100 hover:border-[#0984E3] hover:shadow-md'
+                                        ? 'border-red-200 bg-red-50 hover:border-red-300'
+                                        : 'border-gray-100 hover:border-[#0984E3] hover:shadow-md'
                                         }`}
                                 >
                                     <div className="flex justify-between items-start mb-2">
@@ -185,10 +208,15 @@ export default function ScholarshipCalendar() {
                                                     마감일
                                                 </span>
                                             )}
+                                            {isGroup && (
+                                                <span className="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded">
+                                                    +{group.length - 1}개 옵션
+                                                </span>
+                                            )}
                                         </div>
                                         <span className="text-xs text-gray-400">{scholarship.foundation}</span>
                                     </div>
-                                    <h4 className="font-bold text-gray-900 line-clamp-1 mb-1">{scholarship.name}</h4>
+                                    <h4 className="font-bold text-gray-900 line-clamp-1 mb-1">{displayName}</h4>
                                     <div className="text-sm text-gray-500">
                                         {scholarship.amount || '금액 미정'}
                                     </div>
@@ -208,6 +236,7 @@ export default function ScholarshipCalendar() {
                 <style jsx>{`
                     .custom-scrollbar::-webkit-scrollbar {
                         width: 6px;
+                        height: 6px;
                     }
                     .custom-scrollbar::-webkit-scrollbar-track {
                         background: #f1f1f1;

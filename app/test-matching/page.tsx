@@ -27,6 +27,7 @@ export default function TestMatchingPage() {
         religion: "christianity",
         enrollment_status: "enrolled",
         school_name: "부산대학교",
+        school_address: "부산광역시 금정구 부산대학로63번길 2 (장전동)",
         school_type: "university",
         current_grade: 2,
         current_semester: 2,
@@ -117,17 +118,36 @@ export default function TestMatchingPage() {
 
                     {useMockUser && (
                         <div className="mb-4 p-4 bg-white rounded border">
-                            <label className="block text-sm font-bold mb-2">테스트용 학교 이름 변경:</label>
-                            <input
-                                type="text"
-                                value={activeUser.school_name || ''}
-                                onChange={(e) => {
-                                    setMockUser(prev => ({ ...prev, school_name: e.target.value }))
-                                }}
-                                className="border p-2 rounded w-full"
-                                placeholder="예: 서울대학교"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">이 값을 변경하면 매칭 점수가 실시간으로 재계산됩니다.</p>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold mb-2">테스트용 학교 이름:</label>
+                                    <input
+                                        type="text"
+                                        value={activeUser.school_name || ''}
+                                        onChange={(e) => {
+                                            setMockUser(prev => ({ ...prev, school_name: e.target.value }))
+                                        }}
+                                        className="border p-2 rounded w-full"
+                                        placeholder="예: 강릉원주대학교"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold mb-2">테스트용 학교 주소 (지역 매칭용):</label>
+                                    <input
+                                        type="text"
+                                        value={activeUser.school_address || ''}
+                                        onChange={(e) => {
+                                            setMockUser(prev => ({ ...prev, school_address: e.target.value }))
+                                        }}
+                                        className="border p-2 rounded w-full"
+                                        placeholder="예: 강원도 원주시 흥업면 남원로 150"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        '강원,!원주' 장학금 테스트 시: '강원도 원주시...' 입력 → 매칭 실패 (제외됨)<br />
+                                        '강원,!원주' 장학금 테스트 시: '강원도 춘천시...' 입력 → 매칭 성공 (포함됨)
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -144,6 +164,7 @@ export default function TestMatchingPage() {
                         <p><strong>주소:</strong> {activeUser.address}</p>
                         {activeUser.parents_address && <p><strong>부모님 주소:</strong> {activeUser.parents_address}</p>}
                         <p><strong>학교:</strong> {activeUser.school_name} ({activeUser.school_type})</p>
+                        <p><strong>학교 주소:</strong> {activeUser.school_address}</p>
                         <p><strong>학과:</strong> {activeUser.major}</p>
                         <p><strong>소득:</strong> {activeUser.income_bracket}분위</p>
                         <p><strong>추가정보:</strong> {activeUser.additional_info}</p>

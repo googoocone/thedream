@@ -11,6 +11,7 @@ export interface UserProfile {
 
     // Education
     school_name?: string;
+    school_address?: string; // University address for region matching
     school_type?: string; // 'university' | 'college' | 'grad_school' | 'cyber' | 'open'
     major?: string;
     major_large_category?: string; // '공학', '인문' etc. (If available)
@@ -34,6 +35,7 @@ export interface UserProfile {
 
 export interface Scholarship {
     id: string;
+    group_name?: string;
     name: string;
     foundation: string;
 
@@ -86,7 +88,7 @@ export function calculateMatchScore(user: UserProfile, scholarship: Scholarship)
     }
 
     // 1.2 School Type
-    if (scholarship.target_school_type) {
+    if (scholarship.target_school_type && scholarship.target_school_type !== 'any') {
         const targetTypes = scholarship.target_school_type.split(',').map(t => t.trim());
         if (user.school_type && !targetTypes.includes(user.school_type)) {
             return 0; // Disqualified
@@ -234,7 +236,18 @@ export function calculateMatchScore(user: UserProfile, scholarship: Scholarship)
             }
         }
 
-        const hasMatch = scholarship.special_criteria.some(criteria => userCriteria.includes(criteria));
+        const hasMatch = scholarship.special_criteria.some(criteria => {
+            // 1. Standard separate criteria match
+            if (userCriteria.includes(criteria)) return true;
+
+            // 2. Text-based Matching for specific tags
+            if (criteria === 'major_chinese') {
+                const majorName = (user.major || '').replace(/\s+/g, ''); // Remove spaces
+                return majorName.includes('중국어') || majorName.includes('중어');
+            }
+
+            return false;
+        });
 
         if (!hasMatch) {
             return 0; // Disqualified (User doesn't meet the special requirement)
@@ -263,13 +276,30 @@ export function calculateMatchScore(user: UserProfile, scholarship: Scholarship)
     // 2.0 University Region (Strict Filter)
     if (scholarship.target_university_region && scholarship.target_university_region !== '전국') {
         const targets = scholarship.target_university_region.split(',').map(r => r.trim());
-        // If user has no school address but scholarship requires one, we might disqualify or let pass if lenient?
-        // Assuming strict:
-        if (!schoolRegion) {
+
+        // Use full address to support specific city targeting (e.g. "원주")
+        const fullSchoolAddr = user.school_address || '';
+
+        if (!fullSchoolAddr) {
+            // If user has no school address but scholarship requires one
             return 0;
         }
-        if (!targets.some(t => schoolRegion.includes(t))) {
-            return 0; // Disqualified
+
+        // Check if ANY target is found in the full address
+        // Support '!' for exclusion (e.g. "강원,!원주" -> Must match Gangwon, Must NOT match Wonju)
+        const positives = targets.filter(t => !t.startsWith('!'));
+        const negatives = targets.filter(t => t.startsWith('!')).map(t => t.slice(1));
+
+        // 1. Positive Check: If strict positives exist, must match at least one
+        if (positives.length > 0) {
+            if (!positives.some(t => fullSchoolAddr.includes(t))) {
+                return 0; // Disqualified (Didn't match required region)
+            }
+        }
+
+        // 2. Negative Check: Must NOT match any negative
+        if (negatives.some(t => fullSchoolAddr.includes(t))) {
+            return 0; // Disqualified (Matched excluded region)
         }
     }
 
@@ -298,9 +328,11 @@ export function calculateMatchScore(user: UserProfile, scholarship: Scholarship)
         regionConstraintExists = true;
         const targets = scholarship.target_high_school_region.split(',').map(r => r.trim());
 
-        // Check against user.high_school_address
-        const hsRegion = getRegion(user.high_school_address);
-        if (hsRegion && targets.some(t => hsRegion.includes(t))) {
+        // Check against full high school address to support city-level matching (e.g. "부천")
+        // Use full address if available, otherwise fallback to empty string
+        const hsAddress = user.high_school_address || '';
+
+        if (hsAddress && targets.some(t => hsAddress.includes(t))) {
             regionMatched = true;
             regionScore += 20;
         }
