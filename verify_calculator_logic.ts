@@ -9,28 +9,32 @@ const scholarships: Scholarship[] = [
         foundation: '서울장학재단',
         target_region: '서울',
         max_income: 3,
-        amount: '100만원'
+        amount: '100만원',
+        application_end: '2024-12-31'
     },
     {
         id: '2',
         name: '성적 우수 장학금',
         foundation: '우수재단',
         min_gpa: 4.0,
-        amount: '200만원'
+        amount: '200만원',
+        application_end: '2024-12-31'
     },
     {
         id: '3',
         name: '경기도민 장학금',
         foundation: '경기재단',
         target_region: '경기',
-        amount: '150만원'
+        amount: '150만원',
+        application_end: '2024-12-31'
     },
     {
         id: '4',
         name: '공학계열 지원금',
         foundation: '미래재단',
         target_major_category: '공학계열',
-        amount: '50만원'
+        amount: '50만원',
+        application_end: '2024-12-31'
     }
 ];
 
