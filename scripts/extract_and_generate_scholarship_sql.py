@@ -105,6 +105,12 @@ def extract_gpa(text):
 def extract_grades(text):
     if not isinstance(text, str):
         return "1,2,3,4"
+        
+    # Pre-process: ignore "4학년은"
+    original_text = text
+    if '4학년은' in text:
+        text = text.replace('4학년은', '')
+        
     grades = set()
     matches = re.findall(r'([1-4])(?:학년|,)', text)
     for m in matches:
@@ -112,11 +118,36 @@ def extract_grades(text):
     
     if "신입" in text:
         grades.add('1')
+
+    # If '재학생' is detected and grades set is limited (e.g. only '1' from 신입 or empty),
+    # Expand to all grades because 'Enrolled' usually implies all years.
+    # Exception: if explicit "2학년" etc are found, we respect that.
+    # But if only '1' was found (from '신입') AND '재학생' exists, it implies 'Freshman AND Enrolled', so likely '1,2,3,4'.
+    if '재학생' in original_text or '대학생' in original_text:
+         if not grades or (len(grades) == 1 and '1' in grades):
+             return "1,2,3,4"
         
     if not grades:
         return "1,2,3,4"
     
     return ",".join(sorted(list(grades)))
+
+# ... (omitted code) ...
+
+    target_region = "'전국'"
+    
+    # Extract Minimum Credits
+    min_prev_semester_credits = 12 # Default
+    credit_match = re.search(r'(\d+)\s*학점', combined_text)
+    if credit_match:
+        try:
+            val = int(credit_match.group(1))
+            # Basic sanity check (credits usually 6~20)
+            if 6 <= val <= 24:
+                min_prev_semester_credits = val
+        except:
+            pass
+            
 
 def extract_income(text):
     if not isinstance(text, str):
@@ -422,6 +453,11 @@ def create_entry_data(row, track_tag, specific_eligibility_text):
         sc_list.append('disabled_family')
     if '다자녀' in combined_text:
         sc_list.append('multi_child')
+    # Check for "N자녀" (e.g. 5자녀, 3자녀)
+    if re.search(r'\d+자녀', combined_text):
+        if 'multi_child' not in sc_list:
+            sc_list.append('multi_child')
+        
     if '국가유공자' in combined_text or '보훈' in combined_text:
         sc_list.append('veteran') # Maps to general veteran/national merit
         sc_list.append('national_merit_family') # Add both if ambiguous or specific logic needed. For now add both to be safe or just veteran? Frontend has distinct IDs.
@@ -696,9 +732,34 @@ def create_entry_data(row, track_tag, specific_eligibility_text):
             "동의과학대학교","오산대학교","구미대학교","영진전문대학교","전주비전대학교","한국영상대학교","한양여자대학교","호산대학교"
          ]
          target_universities = f"'{','.join(list(set(gks_unis)))}'"
+         target_universities = f"'{','.join(list(set(gks_unis)))}'"
     
+    # Generic University Extraction from Text (if NULL)
     if target_universities == "NULL":
-         target_universities = "'무관'"
+         # Look for "XX대학교" or "XX대학" in parentheses or explicitly listed
+         # Regex for generally likely university names (2+ chars + university/college)
+         # Using a slightly restrictive pattern to avoid noise.
+         # Found in File 22: (*원광대학교, 원광보건대학교, 전북대학교 특성화캠퍼스, 한국폴리텍V대학교 익산캠퍼스 ...)
+         
+         # Identify candidates
+         uni_matches = re.findall(r'([가-힣A-Za-z0-9]+대학교|[가-힣A-Za-z0-9]+대학)', combined_text)
+         
+         valid_unis = []
+         if uni_matches:
+             for u in uni_matches:
+                 # Exclude common generic terms
+                 if u in ['대학교', '전문대학', '사이버대학', '디지털대학', '관내대학', '소재대학', '4년제대학', '4년제대학교', '일반대학', '일반대학교', '전국대학', '전국대학교']:
+                     continue
+                 if '서울' in u and len(u) < 4: continue # Too vague like "서울대학"? No, Seoul National is 서울대학교.
+                 
+                 valid_unis.append(u)
+         
+         if valid_unis:
+             # De-duplicate
+             valid_unis = list(set(valid_unis))
+             target_universities = f"'{','.join(valid_unis)}'"
+         else:
+             target_universities = "'무관'"
          
     # Region Logic Refinement
     # Default is '전국'
@@ -793,7 +854,40 @@ def create_entry_data(row, track_tag, specific_eligibility_text):
          # Special handling for Ansan tracks
          # "Half-tuition": name contains '반값'
          # "Special (Chamber of Commerce)": '상공회의소'
+
+    # Special Fix for Iksan (File 21)
+    if '익산' in group_name or '익산' in name or '익산' in foundation:
+         target_region = "'익산'"
          
+         # Check for Parents/Guardian requirement
+         if '부모' in combined_text or '보호자' in combined_text:
+             target_parents_region = "'익산'"
+         else:
+             target_parents_region = "'전국'"
+         # Iksan generally requires parents to be in Iksan, but High School might be flexible?
+         # Iksan High School Logic - Relaxed as per user request
+         target_high_school_region = "'전국'"
+         if '관내 고교' in combined_text or '관내 고등' in combined_text or '익산 소재 고등' in combined_text:
+              target_high_school_region = "'익산'"
+
+
+
+         has_inside = '관내' in name or ('관내' in combined_text and '대학' in combined_text)
+         has_outside = '관외' in name or ('관외' in combined_text and '대학' in combined_text)
+         
+         if has_inside and has_outside:
+             target_university_region = "'전국'"
+         elif has_inside:
+             target_university_region = "'익산'"
+         elif has_outside:
+             target_university_region = "'!익산'"
+
+    # Generic 'Sudogwon' (Metropolitan) match
+    if '수도권' in combined_text:
+         # Check if it implies target uni region
+         if '소재' in combined_text or '진학' in combined_text or '대학' in combined_text:
+              target_university_region = "'서울,경기,인천'"
+    
     return {
         "group_name": group_name, "name": name, "foundation": foundation, "category": category,
         "benefit_type": benefit_type, "payment_method": payment_method, "payment_period": payment_period,
@@ -814,22 +908,7 @@ def create_entry_data(row, track_tag, specific_eligibility_text):
 # --- Main ---
 
 files_to_process = [
-    ('scholarship3.xlsx', 'data/generated_scholarships_3.sql'),
-    ('scholarship4.xlsx', 'data/generated_scholarships_4.sql'),
-    ('scholarship5.xlsx', 'data/generated_scholarships_5.sql'),
-    ('scholarship6.xlsx', 'data/generated_scholarships_6.sql'),
-    ('scholarship7.xlsx', 'data/generated_scholarships_7.sql'),
-    ('scholarship8.xlsx', 'data/generated_scholarships_8.sql'),
-    ('scholarship9.xlsx', 'data/generated_scholarships_9.sql'),
-    ('scholarship10.xlsx', 'data/generated_scholarships_10.sql'),
-    ('scholarship11.xlsx', 'data/generated_scholarships_11.sql'),
-    ('scholarship12.xlsx', 'data/generated_scholarships_12.sql'),
-    ('scholarship13.xlsx', 'data/generated_scholarships_13.sql'),
-    ('scholarship14.xlsx', 'data/generated_scholarships_14.sql'),
-    ('scholarship15.xlsx', 'data/generated_scholarships_15.sql'),
-    ('scholarship16.xlsx', 'data/generated_scholarships_16.sql'),
-    ('scholarship17.xlsx', 'data/generated_scholarships_17.sql'),
-    ('scholarship18.xlsx', 'data/generated_scholarships_18.sql'),
+    ('scholarship24.xlsx', 'data/generated_scholarships_24.sql'),
 ]
 
 
@@ -1009,6 +1088,22 @@ for input_file, output_file in files_to_process:
                 e_mod['target_region'] = "'은평'" # Force Eunpyeong
                 e_mod['target_parents_region'] = "'은평'" # Force Eunpyeong for safety
                 final_entries.append(e_mod)
+                
+            # Generic Split for "Self OR Guardian/Parent Address" (e.g. Iksan)
+            # If target_region is Specific AND target_parents_region is Specific AND "OR" is keyword
+            # We assume it implies AND logic in standard schema, so we split to allow OR matching.
+            elif ('본인 또는 보호자' in e['eligibility'] or '본인 또는 부모' in e['eligibility']) and e['target_region'] != "'전국'" and e['target_parents_region'] != "'전국'":
+                 # Entry A: Self Residence
+                 e_self = e.copy()
+                 e_self['target_parents_region'] = "'전국'" # Clear parent requirement
+                 e_self['name'] = f"'{e_name} (본인 주소)'"
+                 
+                 # Entry B: Parent Residence
+                 e_parent = e.copy()
+                 e_parent['target_region'] = "'전국'" # Clear self requirement
+                 e_parent['name'] = f"'{e_name} (보호자 주소)'"
+                 
+                 final_entries.extend([e_self, e_parent])
 
             else:
                 final_entries.append(e)
