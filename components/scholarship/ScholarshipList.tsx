@@ -14,6 +14,9 @@ interface Scholarship {
     amount: string;
     tags: string[];
     application_end: string;
+    target_school_type?: string;
+    special_criteria?: string[];
+    min_gpa?: number;
 }
 
 interface ScholarshipListProps {
@@ -22,6 +25,7 @@ interface ScholarshipListProps {
         edu?: string;
         major?: string;
         tag?: string;
+        search?: string;
     };
     isGuestSearch?: boolean;
 }
@@ -44,7 +48,7 @@ function calculateDDay(dateStr: string | null) {
 export default function ScholarshipList({ initialFilters, isGuestSearch = false }: ScholarshipListProps) {
     const [scholarships, setScholarships] = useState<Scholarship[]>([])
     const [loading, setLoading] = useState(true)
-    const [searchTerm, setSearchTerm] = useState('')
+    const [searchTerm, setSearchTerm] = useState(initialFilters?.search || '')
     const [visibleCount, setVisibleCount] = useState(8)
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
     const ITEMS_PER_LOAD = 8
@@ -58,7 +62,7 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
             // 1. Fetch ALL scholarships (Added group_name)
             let query = supabase
                 .from('scholarships')
-                .select('id, name, group_name, foundation, amount, tags, application_end, target_school_type, target_major_category, target_universities')
+                .select('id, name, group_name, foundation, amount, tags, application_end, target_school_type, target_major_category, target_universities, special_criteria, min_gpa')
 
             // 2. Search filter
             if (searchTerm) {
@@ -79,8 +83,12 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
             if (initialFilters?.major) {
                 // Approximate mapping for major categories if needed
                 if (initialFilters.major === 'arts_sports') {
-                    // Assuming DB value is '예체능' or similar. 
-                    query = query.eq('target_major_category', '예체능')
+                    // Match any category containing '예체능'
+                    query = query.ilike('target_major_category', '%예체능%')
+                } else if (initialFilters.major === 'stem') {
+                    // Match Engineering OR Natural Sciences
+                    // using .or() syntax for Supabase: field.ilike.val,field.ilike.val
+                    query = query.or('target_major_category.ilike.%공학%,target_major_category.ilike.%자연%,target_major_category.ilike.%이공%,target_major_category.ilike.%과학%')
                 } else {
                     query = query.eq('target_major_category', initialFilters.major)
                 }
@@ -88,7 +96,16 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
 
             // Tag filtering (e.g. startup, social_support)
             if (initialFilters?.tag) {
-                query = query.contains('tags', [initialFilters.tag])
+                if (initialFilters.tag === 'social_support') {
+                    // Social support covers various family/environment criteria
+                    const socialCriteria = ['low_income', 'single_parent', 'multicultural', 'north_defector', 'farmer', 'work_student', 'disabled', 'veteran'];
+                    query = query.overlaps('special_criteria', socialCriteria);
+                } else if (initialFilters.tag === 'merit') {
+                    // Merit: Requires grades (min_gpa > 0) AND accessible to 3.5 GPA (min_gpa <= 3.5)
+                    query = query.gt('min_gpa', 0).lte('min_gpa', 3.5);
+                } else {
+                    query = query.contains('tags', [initialFilters.tag])
+                }
             }
 
             const { data, error } = await query

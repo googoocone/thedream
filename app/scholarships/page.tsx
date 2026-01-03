@@ -25,6 +25,7 @@ export default async function ScholarshipsPage({
                         edu: filters.edu as string,
                         major: filters.major as string,
                         tag: filters.tag as string,
+                        search: filters.search as string,
                     }}
                     isGuestSearch={true}
                 />

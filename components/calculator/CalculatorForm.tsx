@@ -60,11 +60,14 @@ export default function CalculatorForm({ onResult }: CalculatorFormProps) {
                                     key={g}
                                     onClick={() => handleChange('grade', g)}
                                     className={`py-3 rounded-xl transition-all duration-200 font-medium ${formData.grade === g
-                                            ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 transform scale-105'
-                                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 transform scale-105'
+                                        : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                                         }`}
                                 >
-                                    {g}학년
+                                    <div className="flex flex-col items-center leading-none">
+                                        <span>{g}학년</span>
+                                        {g === 1 && <span className="text-[10px] opacity-80 mt-1 font-normal">(신입생)</span>}
+                                    </div>
                                 </button>
                             ))}
                         </div>

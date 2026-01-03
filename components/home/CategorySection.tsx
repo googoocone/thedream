@@ -2,15 +2,6 @@ import Link from 'next/link'
 
 const categories = [
     {
-        id: 'high_school',
-        label: '고등학생',
-        subLabel: 'High School',
-        emoji: '🏫',
-        href: '/scholarships?edu=high_school',
-        color: 'bg-green-50 text-green-600',
-        count: '45+'
-    },
-    {
         id: 'university',
         label: '대학생',
         subLabel: 'University',
@@ -19,7 +10,6 @@ const categories = [
         color: 'bg-blue-50 text-blue-600',
         count: '120+'
     },
-
     {
         id: 'graduate',
         label: '대학원생',
@@ -39,6 +29,24 @@ const categories = [
         count: '50+'
     },
     {
+        id: 'merit',
+        label: '성적우수',
+        subLabel: 'Merit Based',
+        emoji: '💯',
+        href: '/scholarships?tag=merit',
+        color: 'bg-red-50 text-red-600',
+        count: '80+'
+    },
+    {
+        id: 'stem',
+        label: '이공계',
+        subLabel: 'STEM',
+        emoji: '🧬',
+        href: '/scholarships?major=stem',
+        color: 'bg-indigo-50 text-indigo-600',
+        count: '60+'
+    },
+    {
         id: 'arts_sports',
         label: '예체능',
         subLabel: 'Arts & Sports',
@@ -46,15 +54,6 @@ const categories = [
         href: '/scholarships?major=arts_sports',
         color: 'bg-pink-50 text-pink-600',
         count: '15+'
-    },
-    {
-        id: 'startup',
-        label: '창업/취업',
-        subLabel: 'Career',
-        emoji: '🚀',
-        href: '/scholarships?tag=startup',
-        color: 'bg-indigo-50 text-indigo-600',
-        count: '25+'
     }
 ]
 
