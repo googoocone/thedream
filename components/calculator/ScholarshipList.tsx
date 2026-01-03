@@ -90,7 +90,7 @@ export default function ScholarshipList({ scholarships, totalAmount }: Scholarsh
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center mb-10 p-8 bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl border border-orange-200 shadow-sm"
             >
-                <p className="text-gray-600 mb-2 font-medium">이번 학기, 다니엘님이 받을 수 있는</p>
+                <p className="text-gray-600 mb-2 font-medium">이번 학기, 내가 받을 수 있는</p>
                 <h2 className="text-4xl font-extrabold text-gray-900 mb-2">
                     최대 <span className="text-orange-600 inline-block transform hover:scale-110 transition-transform cursor-default">{formatMoney(totalAmount)}</span>
                 </h2>

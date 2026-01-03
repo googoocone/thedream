@@ -78,24 +78,28 @@ export default function ShareModal({ isOpen, onClose, totalAmount }: ShareModalP
             return;
         }
 
+        const shareUrl = 'https://thedreamkorea.com/calculator'; // Hardcoded for testing
+
+        console.log('Sharing to Kakao:', {
+            url: shareUrl,
+            title: '내 장학금 찾기',
+            description: `이번 학기, 내가 받을 수 있는 장학금은 최대 ${totalAmount > 0 ? totalAmount.toLocaleString() + '만 원' : '0원'}입니다!`
+        });
+
+        // 다모앙 스타일: 텍스트 위주 + 파란색 링크 + 버튼
         window.Kakao.Share.sendDefault({
-            objectType: 'feed',
-            content: {
-                title: '내 장학금 찾기',
-                description: `이번 학기, 내가 받을 수 있는 장학금은 최대 ${totalAmount > 0 ? totalAmount.toLocaleString() + '만 원' : '0원'}입니다!`,
-                imageUrl:
-                    'https://i.ibb.co/wznwz0z/og-image.png', // TODO: Replace with your actual OG image URL
-                link: {
-                    mobileWebUrl: url,
-                    webUrl: url,
-                },
+            objectType: 'text',
+            text: `💸 혹시 나도 해당될까?\n\n이번 학기, 내가 놓치고 있는 숨은 장학금이 최대 ${totalAmount > 0 ? totalAmount.toLocaleString() + '만 원' : '0원'}이나 된대요!\n\n👇 내 예상 장학금 3초 만에 조회하기\n${shareUrl}`,
+            link: {
+                mobileWebUrl: shareUrl,
+                webUrl: shareUrl,
             },
             buttons: [
                 {
-                    title: '결과 확인하기',
+                    title: '내 장학금 조회하기',
                     link: {
-                        mobileWebUrl: url,
-                        webUrl: url,
+                        mobileWebUrl: shareUrl,
+                        webUrl: shareUrl,
                     },
                 },
             ],
