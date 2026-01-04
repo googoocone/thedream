@@ -185,38 +185,24 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                                             return dDay !== "마감";
                                         })
                                         .map((scholarship, index) => {
-                                            const originalIndex = matchedScholarships.findIndex(s => s.id === scholarship.id);
-                                            const isLocked = !userData?.is_subscribed && originalIndex > 0;
+                                            // Locked logic removed as per request
+                                            // const originalIndex = matchedScholarships.findIndex(s => s.id === scholarship.id);
+                                            // const isLocked = !userData?.is_subscribed && originalIndex > 0;
+                                            const isLocked = false;
 
                                             return (
-                                                <div key={scholarship.id} onClick={(e) => {
-                                                    if (isLocked) {
-                                                        e.preventDefault();
-                                                        setIsSubscriptionModalOpen(true);
-                                                    }
-                                                }}>
-                                                    {isLocked ? (
+                                                <div key={scholarship.id}>
+                                                    <Link href={`/scholarships/${scholarship.id}`}>
                                                         <HorizontalScholarshipCard
                                                             dDay={calculateDDay(scholarship.application_end)}
                                                             title={scholarship.group_name || scholarship.name}
                                                             location={scholarship.foundation}
                                                             tags={scholarship.tags || []}
                                                             amount={scholarship.amount}
-                                                            isLocked={true}
+                                                            isLocked={false}
+                                                            score={scholarship.score}
                                                         />
-                                                    ) : (
-                                                        <Link href={`/scholarships/${scholarship.id}`}>
-                                                            <HorizontalScholarshipCard
-                                                                dDay={calculateDDay(scholarship.application_end)}
-                                                                title={scholarship.group_name || scholarship.name}
-                                                                location={scholarship.foundation}
-                                                                tags={scholarship.tags || []}
-                                                                amount={scholarship.amount}
-                                                                isLocked={false}
-                                                                score={scholarship.score}
-                                                            />
-                                                        </Link>
-                                                    )}
+                                                    </Link>
                                                 </div>
                                             );
                                         })}
@@ -234,38 +220,24 @@ export default function MyPageTabs({ userData }: MyPageTabsProps) {
                                             {displayedMatchedScholarships
                                                 .filter(s => calculateDDay(s.application_end) === "마감")
                                                 .map((scholarship, index) => {
-                                                    const originalIndex = matchedScholarships.findIndex(s => s.id === scholarship.id);
-                                                    const isLocked = !userData?.is_subscribed && originalIndex > 0;
+                                                    // Locked logic removed
+                                                    // const originalIndex = matchedScholarships.findIndex(s => s.id === scholarship.id);
+                                                    // const isLocked = !userData?.is_subscribed && originalIndex > 0;
+                                                    const isLocked = false;
 
                                                     return (
-                                                        <div key={scholarship.id} onClick={(e) => {
-                                                            if (isLocked) {
-                                                                e.preventDefault();
-                                                                setIsSubscriptionModalOpen(true);
-                                                            }
-                                                        }}>
-                                                            {isLocked ? (
+                                                        <div key={scholarship.id}>
+                                                            <Link href={`/scholarships/${scholarship.id}`}>
                                                                 <HorizontalScholarshipCard
                                                                     dDay={calculateDDay(scholarship.application_end)}
                                                                     title={scholarship.group_name || scholarship.name}
                                                                     location={scholarship.foundation}
                                                                     tags={scholarship.tags || []}
                                                                     amount={scholarship.amount}
-                                                                    isLocked={true}
+                                                                    isLocked={false}
+                                                                    score={scholarship.score}
                                                                 />
-                                                            ) : (
-                                                                <Link href={`/scholarships/${scholarship.id}`}>
-                                                                    <HorizontalScholarshipCard
-                                                                        dDay={calculateDDay(scholarship.application_end)}
-                                                                        title={scholarship.group_name || scholarship.name}
-                                                                        location={scholarship.foundation}
-                                                                        tags={scholarship.tags || []}
-                                                                        amount={scholarship.amount}
-                                                                        isLocked={false}
-                                                                        score={scholarship.score}
-                                                                    />
-                                                                </Link>
-                                                            )}
+                                                            </Link>
                                                         </div>
                                                     );
                                                 })}
