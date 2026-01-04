@@ -70,8 +70,27 @@ export default function HeroSection() {
         const birth = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
         const params = new URLSearchParams();
         if (birthYear && birthMonth && birthDay) params.append('birth', birth);
-        if (education) params.append('edu', education);
-        if (major) params.append('major', major);
+
+        // Education Mapping
+        if (education) {
+            let eduCode = '';
+            if (education.includes('고등학교')) eduCode = 'high_school';
+            else if (education.includes('대학교')) eduCode = 'university';
+            else if (education.includes('대학원')) eduCode = 'grad_school';
+
+            if (eduCode) params.append('edu', eduCode);
+        }
+
+        // Major Mapping (Optional)
+        if (major) {
+            let majorCode = '';
+            if (['공학계열', '자연계열'].includes(major)) majorCode = 'stem';
+            else if (['예체능계열'].includes(major)) majorCode = 'arts_sports';
+            else if (['인문계열', '사회계열', '교육계열'].includes(major)) majorCode = 'humanities'; // Or map specific names if supported
+            else majorCode = major; // Fallback to raw string
+
+            if (majorCode) params.append('major', majorCode);
+        }
 
         router.push(`/scholarships?${params.toString()}`);
     };

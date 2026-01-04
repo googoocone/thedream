@@ -82,15 +82,20 @@ export default function ScholarshipList({ initialFilters, isGuestSearch = false 
 
             if (initialFilters?.major) {
                 // Approximate mapping for major categories if needed
+                // IMPORTANT: Always include '무관' (Any) and NULL to show general scholarships
+
                 if (initialFilters.major === 'arts_sports') {
-                    // Match any category containing '예체능'
-                    query = query.ilike('target_major_category', '%예체능%')
+                    // Match any category containing '예체능' OR '무관'
+                    query = query.or('target_major_category.ilike.%예체능%,target_major_category.eq.무관,target_major_category.is.null') // Fixed: include general
                 } else if (initialFilters.major === 'stem') {
-                    // Match Engineering OR Natural Sciences
-                    // using .or() syntax for Supabase: field.ilike.val,field.ilike.val
-                    query = query.or('target_major_category.ilike.%공학%,target_major_category.ilike.%자연%,target_major_category.ilike.%이공%,target_major_category.ilike.%과학%')
+                    // Match Engineering OR Natural Sciences OR '무관'
+                    query = query.or('target_major_category.ilike.%공학%,target_major_category.ilike.%자연%,target_major_category.ilike.%이공%,target_major_category.ilike.%과학%,target_major_category.eq.무관,target_major_category.is.null')
+                } else if (initialFilters.major === 'humanities') {
+                    // Match Humanities/Social OR '무관'
+                    query = query.or('target_major_category.ilike.%인문%,target_major_category.ilike.%사회%,target_major_category.ilike.%상경%,target_major_category.ilike.%교육%,target_major_category.eq.무관,target_major_category.is.null')
                 } else {
-                    query = query.eq('target_major_category', initialFilters.major)
+                    // For other specific codes, also allow '무관'
+                    query = query.or(`target_major_category.eq.${initialFilters.major},target_major_category.eq.무관,target_major_category.is.null`)
                 }
             }
 
