@@ -51,7 +51,7 @@ export default function SignupPage() {
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`,
                 queryParams: {
-                    scope: 'profile_nickname',
+                    scope: 'account_email,profile_nickname',
                 },
             },
         })

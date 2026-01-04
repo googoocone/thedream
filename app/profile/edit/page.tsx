@@ -73,13 +73,21 @@ export default function ProfileEditPage() {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (user) {
+
+            const updates = {
+                ...formData,
+                id: user.id,
+                email: user.email,
+                updated_at: new Date().toISOString(),
+            }
+
             const { error } = await supabase
                 .from('users')
-                .update(formData)
-                .eq('id', user.id)
+                .upsert(updates)
 
             if (error) {
-                alert('저장 중 오류가 발생했습니다.')
+                console.error("Save error:", error);
+                alert('저장 중 오류가 발생했습니다: ' + error.message)
             } else {
                 // Celebration effect!
                 confetti({

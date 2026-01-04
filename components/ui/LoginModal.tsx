@@ -67,7 +67,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                             options: {
                                                 redirectTo: `${window.location.origin}/auth/callback`,
                                                 queryParams: {
-                                                    scope: 'profile_nickname',
+                                                    scope: 'account_email,profile_nickname',
                                                 },
                                             },
                                         })

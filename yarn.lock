@@ -220,6 +220,28 @@
     lodash.merge "^4.6.2"
     react-icons "^5.5.0"
 
+"@emnapi/core@^1.4.3":
+  version "1.8.0"
+  resolved "https://registry.npmjs.org/@emnapi/core/-/core-1.8.0.tgz"
+  integrity sha512-ryJnSmj4UhrGLZZPJ6PKVb4wNPAIkW6iyLy+0TRwazd3L1u0wzMe8RfqevAh2HbcSkoeLiSYnOVDOys4JSGYyg==
+  dependencies:
+    "@emnapi/wasi-threads" "1.1.0"
+    tslib "^2.4.0"
+
+"@emnapi/runtime@^1.4.3":
+  version "1.8.0"
+  resolved "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.8.0.tgz"
+  integrity sha512-Z82FDl1ByxqPEPrAYYeTQVlx2FSHPe1qwX465c+96IRS3fTdSYRoJcRxg3g2fEG5I69z1dSEWQlNRRr0/677mg==
+  dependencies:
+    tslib "^2.4.0"
+
+"@emnapi/wasi-threads@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.1.0.tgz"
+  integrity sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==
+  dependencies:
+    tslib "^2.4.0"
+
 "@emoji-mart/data@^1.2.1":
   version "1.2.1"
   resolved "https://registry.npmjs.org/@emoji-mart/data/-/data-1.2.1.tgz"
@@ -805,6 +827,13 @@
     "@tiptap/extension-underline" "^3.11.1"
     "@tiptap/extensions" "^3.11.1"
     "@tiptap/pm" "^3.11.1"
+
+"@tybys/wasm-util@^0.10.0":
+  version "0.10.1"
+  resolved "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.1.tgz"
+  integrity sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==
+  dependencies:
+    tslib "^2.4.0"
 
 "@types/canvas-confetti@^1.9.0":
   version "1.9.0"
