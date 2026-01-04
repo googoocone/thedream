@@ -22,16 +22,27 @@ export default function LoginPage() {
         setLoading(true)
         setError(null)
 
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
 
-        if (error) {
-            setError(error.message)
+        if (signInError) {
+            setError(signInError.message)
             setLoading(false)
-        } else {
-            router.push('/')
+        } else if (user) {
+            // Check if user has a profile with nickname
+            const { data: profile } = await supabase
+                .from('users')
+                .select('nickname')
+                .eq('id', user.id)
+                .single()
+
+            if (!profile?.nickname) {
+                router.push('/profile/edit?step=1')
+            } else {
+                router.push('/')
+            }
             router.refresh()
         }
     }

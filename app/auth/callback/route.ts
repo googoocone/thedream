@@ -11,6 +11,21 @@ export async function GET(request: Request) {
         const supabase = await createClient()
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
+            // Check if user has a profile with nickname
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('users')
+                    .select('nickname')
+                    .eq('id', user.id)
+                    .single()
+
+                if (!profile?.nickname) {
+                    return NextResponse.redirect(`${origin}/profile/edit?step=1`)
+                }
+            }
+
             return NextResponse.redirect(`${origin}${next}`)
         }
     }
