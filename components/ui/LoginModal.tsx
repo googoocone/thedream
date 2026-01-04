@@ -6,16 +6,22 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Lock } from 'lucide-react'
 import Link from 'next/link'
 
+import LoadingOverlay from '@/components/ui/LoadingOverlay'
+import { useState } from 'react'
+
 interface LoginModalProps {
     isOpen: boolean
     onClose: () => void
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+    const [isLoading, setIsLoading] = useState(false)
+
     return (
         <AnimatePresence>
             {isOpen && (
                 <>
+                    <LoadingOverlay isVisible={isLoading} message="로그인 중입니다..." />
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -61,6 +67,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                 <button
                                     type="button"
                                     onClick={async () => {
+                                        setIsLoading(true)
                                         const supabase = createClient()
                                         await supabase.auth.signInWithOAuth({
                                             provider: 'kakao',

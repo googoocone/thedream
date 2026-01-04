@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
+import LoadingOverlay from '@/components/ui/LoadingOverlay'
+
 export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -55,6 +57,7 @@ export default function LoginPage() {
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white">
+            <LoadingOverlay isVisible={loading} message="로그인 중입니다..." />
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
                     <h2 className="text-sm font-bold text-gray-900">
